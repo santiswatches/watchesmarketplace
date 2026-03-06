@@ -28,3 +28,8 @@ dist-ssr
 *.sw?
 
 .env
+
+
+# AGENTS
+.agents
+tools/01_cloudflare_handshake.py

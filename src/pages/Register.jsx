@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { UserPlus, Mail, Lock, User, ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
+import { useGoogleLogin } from "@react-oauth/google";
 
 export default function Register() {
     const [formData, setFormData] = useState({
@@ -29,22 +30,35 @@ export default function Register() {
         setIsLoading(true);
 
         try {
-            await base44.auth.signup({
+            await base44.auth.register({
                 email: formData.email,
                 password: formData.password,
-                full_name: formData.name,
+                name: formData.name,
             });
-            // Signup success flow handles redirect back
             toast.success("Account created successfully!");
+            navigate(createPageUrl("Login"));
         } catch (error) {
             toast.error(error.message || "Registration failed. Please try again.");
             setIsLoading(false);
         }
     };
 
-    const handleGoogleLogin = () => {
-        base44.auth.loginWithOAuth("google");
+    const handleGoogleSignupSuccess = async (tokenResponse) => {
+        setIsLoading(true);
+        try {
+            await base44.auth.loginWithOAuth("google", tokenResponse.access_token);
+            toast.success("Account created successfully!");
+            navigate(createPageUrl("Home"));
+        } catch (error) {
+            toast.error(error.message || "Google sign-up failed.");
+            setIsLoading(false);
+        }
     };
+
+    const handleGoogleLogin = useGoogleLogin({
+        onSuccess: handleGoogleSignupSuccess,
+        onError: () => toast.error("Google Sign-up Failed"),
+    });
 
     return (
         <div className="bg-background min-h-screen pt-24 pb-20 flex items-center justify-center">
@@ -154,7 +168,7 @@ export default function Register() {
                         <Button
                             type="button"
                             variant="outline"
-                            onClick={handleGoogleLogin}
+                            onClick={() => handleGoogleLogin()}
                             className="w-full bg-white/5 border-white/10 text-foreground hover:bg-white/10"
                         >
                             <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24">

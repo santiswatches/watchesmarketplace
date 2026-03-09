@@ -42,14 +42,14 @@ export default function Login() {
             toast.success("Welcome back to Santi's Watches!");
             navigate(createPageUrl("Home"));
         } catch (error) {
-            toast.error(error.message || "Failed to sign in. Please check your credentials.");
+            toast.error(error.message || "Google sign-in failed.");
             setIsLoading(false);
         }
     };
 
     const handleGoogleLogin = useGoogleLogin({
         onSuccess: handleGoogleLoginSuccess,
-        onError: () => toast.error("Google Login Failed")
+        onError: () => toast.error("Google Login Failed"),
     });
 
     return (
@@ -135,7 +135,7 @@ export default function Login() {
                         <Button
                             type="button"
                             variant="outline"
-                            onClick={() => handleGoogleLogin()}
+                            onClick={handleGoogleLogin}
                             className="w-full bg-white/5 border-white/10 text-foreground hover:bg-white/10"
                         >
                             <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24">

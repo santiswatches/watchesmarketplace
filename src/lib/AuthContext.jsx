@@ -24,13 +24,8 @@ export const AuthProvider = ({ children }) => {
       // Mocked public settings
       setAppPublicSettings({ id: appParams.appId, public_settings: {} });
 
-      // Check user auth
-      if (appParams.token) {
-        await checkUserAuth();
-      } else {
-        setIsLoadingAuth(false);
-        setIsAuthenticated(false);
-      }
+      // Check user auth via cookie session
+      await checkUserAuth();
       setIsLoadingPublicSettings(false);
     } catch (error) {
       console.error('Unexpected error:', error);
@@ -49,7 +44,7 @@ export const AuthProvider = ({ children }) => {
       setIsLoadingAuth(true);
       const currentUser = await base44.auth.me();
       setUser(currentUser);
-      setIsAuthenticated(true);
+      setIsAuthenticated(!!currentUser);
       setIsLoadingAuth(false);
     } catch (error) {
       console.error('User auth check failed:', error);

@@ -95,6 +95,17 @@ export const base44 = {
             if (!res.ok) throw new Error(data.error || 'Registration failed');
             return data;
         },
+        loginWithOAuth: async (provider, accessToken) => {
+            if (provider !== 'google') throw new Error('Unsupported provider');
+            const res = await fetch('/api/auth/google', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ access_token: accessToken }),
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Google login failed');
+            return data;
+        },
         logout: async () => {
             await fetch('/api/auth/logout', { method: 'POST' });
             window.location.href = "/";

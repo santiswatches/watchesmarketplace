@@ -67,7 +67,7 @@ const AuthenticatedApp = () => {
 
 
 function App() {
-  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID";
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "948461647288-59shm2ueqkupvcrfk17e5in1ep545rk0.apps.googleusercontent.com";
 
   return (
     <GoogleOAuthProvider clientId={googleClientId}>

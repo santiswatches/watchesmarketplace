@@ -68,37 +68,18 @@ export default function Layout({ children, currentPageName }) {
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const isHome = currentPageName === "Home";
-  
+
   const adminEmails = ["admin112874@chronoluxe.com", "uberuhanunal@gmail.com", "templateseverlasting@gmail.com"];
   const isAdmin = user?.role === "admin" || (user?.email && adminEmails.includes(user.email));
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A]">
-      <style>{`
-        :root {
-          --gold: #C9A962;
-          --gold-light: #D4B870;
-          --dark: #0A0A0A;
-          --dark-lighter: #111111;
-        }
-        body {
-          background: #0A0A0A;
-          color: #fff;
-          font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-        * { -webkit-font-smoothing: antialiased; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0A0A0A; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
-      `}</style>
-
+    <div className="min-h-screen bg-background">
       {/* Navigation */}
       <header
-        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ${
-          scrolled || !isHome
-            ? "bg-[#0A0A0A]/95 backdrop-blur-md border-b border-white/5"
+        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ${scrolled || !isHome
+            ? "bg-background/95 backdrop-blur-md border-b border-border"
             : "bg-transparent"
-        }`}
+          }`}
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <nav className="flex items-center justify-between h-16 md:h-20">
@@ -108,11 +89,10 @@ export default function Layout({ children, currentPageName }) {
                 <Link
                   key={link.label}
                   to={createPageUrl(link.page) + (link.params || "")}
-                  className={`text-xs tracking-[0.15em] uppercase transition-colors duration-300 ${
-                    link.label === "Sale" 
-                      ? "text-[#C9A962] hover:text-[#D4B870]" 
-                      : "text-white/60 hover:text-[#C9A962]"
-                  }`}
+                  className={`text-xs tracking-[0.15em] uppercase transition-colors duration-300 ${link.label === "Sale"
+                      ? "text-gold hover:text-gold-light"
+                      : "text-muted-foreground hover:text-gold"
+                    }`}
                 >
                   {link.label}
                 </Link>
@@ -130,9 +110,9 @@ export default function Layout({ children, currentPageName }) {
             {/* Logo */}
             <Link
               to={createPageUrl("Home")}
-              className="absolute left-1/2 -translate-x-1/2 text-white text-xl md:text-2xl tracking-[0.2em] uppercase font-light"
+              className="absolute left-1/2 -translate-x-1/2 text-foreground text-xl md:text-2xl tracking-[0.2em] uppercase font-light"
             >
-              Santi's <span className="text-[#C9A962]">Watches</span>
+              Santi's <span className="text-gold">Watches</span>
             </Link>
 
             {/* Right actions */}
@@ -140,7 +120,7 @@ export default function Layout({ children, currentPageName }) {
               {isAdmin && (
                 <Link
                   to={createPageUrl("Admin")}
-                  className="hidden md:block text-[#C9A962] hover:text-[#D4B870] text-xs tracking-[0.15em] uppercase transition-colors duration-300"
+                  className="hidden md:block text-gold hover:text-gold-light text-xs tracking-[0.15em] uppercase transition-colors duration-300"
                 >
                   Admin
                 </Link>
@@ -148,7 +128,7 @@ export default function Layout({ children, currentPageName }) {
               <button className="hidden md:block text-white/60 hover:text-white transition-colors">
                 <Search className="w-4 h-4" />
               </button>
-              
+
               {!isLoadingUser && (
                 user ? (
                   <DropdownMenu>
@@ -181,14 +161,14 @@ export default function Layout({ children, currentPageName }) {
                   </button>
                 )
               )}
-              
+
               <button
                 onClick={() => setCartOpen(true)}
                 className="relative text-white/60 hover:text-white transition-colors"
               >
                 <ShoppingBag className="w-4 h-4" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-[#C9A962] text-[#0A0A0A] text-[9px] rounded-full flex items-center justify-center font-medium">
+                  <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-gold text-background text-[9px] rounded-full flex items-center justify-center font-medium">
                     {cartCount}
                   </span>
                 )}
@@ -204,7 +184,7 @@ export default function Layout({ children, currentPageName }) {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="md:hidden bg-[#111] border-t border-white/5 overflow-hidden"
+              className="md:hidden bg-card border-t border-border overflow-hidden"
             >
               <div className="p-6 space-y-4">
                 {NAV_LINKS.map((link) => (
@@ -212,11 +192,10 @@ export default function Layout({ children, currentPageName }) {
                     key={link.label}
                     to={createPageUrl(link.page) + (link.params || "")}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`block text-sm tracking-[0.1em] uppercase py-2 transition-colors ${
-                      link.label === "Sale"
-                        ? "text-[#C9A962] hover:text-[#D4B870]"
-                        : "text-white/60 hover:text-[#C9A962]"
-                    }`}
+                    className={`block text-sm tracking-[0.1em] uppercase py-2 transition-colors ${link.label === "Sale"
+                        ? "text-gold hover:text-gold-light"
+                        : "text-muted-foreground hover:text-gold"
+                      }`}
                   >
                     {link.label}
                   </Link>
@@ -226,7 +205,7 @@ export default function Layout({ children, currentPageName }) {
                     key={link.label}
                     to={createPageUrl(link.page) + (link.params || "")}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="block text-[#C9A962] hover:text-[#D4B870] text-sm tracking-[0.1em] uppercase py-2 transition-colors"
+                    className="block text-gold hover:text-gold-light text-sm tracking-[0.1em] uppercase py-2 transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -241,15 +220,15 @@ export default function Layout({ children, currentPageName }) {
       <main>{children}</main>
 
       {/* Footer */}
-      <footer className="bg-[#070707] border-t border-white/5 pt-16 pb-8">
+      <footer className="bg-card border-t border-border pt-16 pb-8">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
             <div className="md:col-span-2">
-              <h3 className="text-white text-xl tracking-[0.2em] uppercase font-light mb-4">
-                Santi's <span className="text-[#C9A962]">Watches</span>
+              <h3 className="text-foreground text-xl tracking-[0.2em] uppercase font-light mb-4">
+                Santi's <span className="text-gold">Watches</span>
               </h3>
               <p className="text-white/30 text-sm font-light leading-relaxed max-w-sm">
-                Your trusted source for the finest luxury timepieces. Every watch in our collection 
+                Your trusted source for the finest luxury timepieces. Every watch in our collection
                 is authenticated and comes with our promise of excellence.
               </p>
             </div>
@@ -260,7 +239,7 @@ export default function Layout({ children, currentPageName }) {
                   <Link
                     key={page}
                     to={createPageUrl(page)}
-                    className="block text-white/30 hover:text-[#C9A962] text-sm transition-colors"
+                    className="block text-muted-foreground hover:text-gold text-sm transition-colors"
                   >
                     {page}
                   </Link>

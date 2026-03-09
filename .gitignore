@@ -33,3 +33,4 @@ dist-ssr
 # AGENTS
 .agents
 tools/01_cloudflare_handshake.py
+architecture/01_cloudflare_setup.md

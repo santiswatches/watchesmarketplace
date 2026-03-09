@@ -1,13 +1,13 @@
 # Project Map (gemini.md)
 
 ## Status
-- **Current Phase:** B - Blueprint (Discovery)
-- **Next Step:** Awaiting User Approval of Blueprint.
+- **Current Phase:** L - Link & A - Architect
+- **Next Step:** Set up A.N.T. 3-Layer Architecture (architecture/, tools/, .tmp/) and verify Cloudflare connections.
 
 ## Discovery Answers
 - **North Star:** A premium online marketplace for watch reselling. Focus is on high-end aesthetics, projecting security and trust to ensure a flawless shopping experience.
-- **Integrations:** Stripe, PayPal, Google Spreadsheet (for order tracking).
-- **Source of Truth:** Cloudflare D1 (Database) + R2 (Storage). (An admin portal will be built separately by the user to manage this data).
+- **Integrations:** Stripe, PayPal, Google Spreadsheet (for order tracking). *Note: Initially no API keys will be used; focus is on core functions.*
+- **Source of Truth:** Cloudflare (Hosting) + Cloudflare D1 (Database) + R2 (Storage). (An admin portal will be built separately by the user to manage this data).
 - **Delivery Payload:** Initially, orders will be tracked/pushed to a Google Spreadsheet for manual processing by founders. Data schemas in this document must be strictly updated as functionalities evolve.
 - **Behavior Rules:** The system is a visually stunning, easy-to-use, and highly functional online marketplace. It must enforce the following rules:
     - **No checkout without an email account** (must login/provide email).
@@ -32,7 +32,7 @@
 - **Auth:** Email login/Google Auth. Email/password requires email verification via a token link (redirects to page with user-id and token). Google OAuth does not require verification. Password reset handling, mandatory email for checkout, 10% discount for providing email.
 - **Search & Filter:** 
     - Filters: Brand, Material (Gold, Rose Gold, Stainless Steel, Others), New Items, Promotions.
-    - Sorting: Price (Low/High), Time (Newest/Oldest).
+    - Sorting: By Price (Low to High / High to Low), By Time (Newest to Oldest / Oldest to Newest).
 - **Checkout:** Stripe & PayPal integration (check PayPal 3-month financing), upfront payments only, refund policy for early customers.
 - **Legal & SEO:** Terms of Service, Privacy Policy, minimal cookies for SEO.
 - **Admin Readiness:** Architecture must support easy updates from the external Admin Portal (Products, Prices, Images).
@@ -40,3 +40,4 @@
 ## Maintenance Log
 - [System Pilot] Initialized Project Map according to Protocol 0.
 - [System Pilot] Updated Discovery Answers, Non-Negotiable Functions, and Drafted Data Schema.
+- [System Pilot] Blueprint Approved by User. Transitioning to Link & Architect phases.

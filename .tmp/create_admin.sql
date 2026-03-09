@@ -1,1 +1,0 @@
-INSERT INTO clients (id, email, name, password_hash, role) VALUES ('admin_user_01', 'santis.watches.managment@gmail.com', 'Admin', '$2b$10$1pwQfegX9Iyk9ifIi/cctudUq3SJMLKW4RYkKB5UyO7iLIYEyteTO', 'admin') ON CONFLICT(email) DO UPDATE SET password_hash = '$2b$10$1pwQfegX9Iyk9ifIi/cctudUq3SJMLKW4RYkKB5UyO7iLIYEyteTO', role = 'admin';

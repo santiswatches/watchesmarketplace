@@ -15,7 +15,33 @@ export const base44 = {
                 const res = await fetch(`/api/watches/${id}`);
                 if (!res.ok) throw new Error('Failed to fetch watch');
                 return res.json();
-            }
+            },
+            create: async (data) => {
+                const res = await fetch('/api/watches', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                });
+                const json = await res.json();
+                if (!res.ok) throw new Error(json.error || 'Failed to create watch');
+                return json;
+            },
+            update: async (id, data) => {
+                const res = await fetch(`/api/watches/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                });
+                const json = await res.json();
+                if (!res.ok) throw new Error(json.error || 'Failed to update watch');
+                return json;
+            },
+            delete: async (id) => {
+                const res = await fetch(`/api/watches/${id}`, { method: 'DELETE' });
+                const json = await res.json();
+                if (!res.ok) throw new Error(json.error || 'Failed to delete watch');
+                return json;
+            },
         },
         Order: {
             create: async (data) => {
@@ -78,10 +104,15 @@ export const base44 = {
     integrations: {
         Core: {
             UploadFile: async ({ file }) => {
-                if (file) {
-                    return { file_url: URL.createObjectURL(file) };
-                }
-                return { file_url: "/assets/watches/1-rolex-submariner.jpg" };
+                const formData = new FormData();
+                formData.append('file', file);
+                const res = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData,
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Upload failed');
+                return { file_url: data.file_url };
             }
         }
     },

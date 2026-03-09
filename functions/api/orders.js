@@ -1,86 +1,96 @@
+import { requireAuth, safeError } from '../_shared/auth.js';
+
+const MAX_ITEMS = 50;
+const MAX_QUANTITY_PER_ITEM = 100;
+
 export async function onRequestPost({ request, env }) {
+    // Orders require an authenticated session — no anonymous order injection
+    const { user, response: authError } = await requireAuth(request, env);
+    if (authError) return authError;
+
     try {
-        const data = await request.json();
-        // Frontend Checkout.jsx sends:
-        // { customer_email, customer_name, items, total_amount, status, paypal_order_id, shipping_address }
-        const { customer_email, customer_name, items, total_amount, status, shipping_address } = data;
+        let data;
+        try { data = await request.json(); } catch { return safeError(400, 'Invalid JSON'); }
 
-        // In a real app, you would retrieve the client_id from the session (JWT).
-        // For now, we use the customer_email from the payload or fallback to a default
-        const clientId = customer_email || "guest-" + Date.now();
+        const { customer_name, items, total_amount } = data;
 
-        // D1 supports batching
-        const orderId = crypto.randomUUID();
+        // ── Input validation ──────────────────────────────────────────────────
+        if (!Array.isArray(items) || items.length === 0) return safeError(400, 'items must be a non-empty array');
+        if (items.length > MAX_ITEMS) return safeError(400, `Too many items (max ${MAX_ITEMS})`);
+        if (typeof total_amount !== 'number' || total_amount <= 0 || !isFinite(total_amount)) {
+            return safeError(400, 'total_amount must be a positive number');
+        }
+        if (total_amount > 10_000_000) return safeError(400, 'total_amount exceeds limit');
 
-        const queries = [];
+        for (const item of items) {
+            if (!item.watch_id || typeof item.watch_id !== 'string' || !/^[a-zA-Z0-9_-]+$/.test(item.watch_id)) {
+                return safeError(400, 'Invalid item watch_id');
+            }
+            if (!Number.isInteger(item.quantity) || item.quantity < 1 || item.quantity > MAX_QUANTITY_PER_ITEM) {
+                return safeError(400, 'item.quantity must be an integer between 1 and 100');
+            }
+            if (typeof item.price !== 'number' || item.price < 0 || !isFinite(item.price)) {
+                return safeError(400, 'item.price must be a non-negative number');
+            }
+        }
 
-        // 1. Insert Order
+        // ── Use the authenticated user's ID — never trust client-supplied clientId ──
+        const clientId = user.id;
+        const orderId  = crypto.randomUUID();
+        const queries  = [];
+
         queries.push(
-            env.DB.prepare('INSERT INTO orders (id, client_id, total, status) VALUES (?, ?, ?, ?)').bind(orderId, clientId, total_amount, status || 'pending')
+            env.DB.prepare('INSERT INTO orders (id, client_id, total, status) VALUES (?1, ?2, ?3, ?4)')
+                  .bind(orderId, clientId, total_amount, 'pending') // status always 'pending' on creation
         );
 
-        // 2. Insert Order Items and reduce stock
-        if (items && Array.isArray(items)) {
-            for (const item of items) {
-                const orderItemId = crypto.randomUUID();
-                queries.push(
-                    env.DB.prepare('INSERT INTO order_items (id, order_id, product_id, quantity, price) VALUES (?, ?, ?, ?, ?)').bind(orderItemId, orderId, item.watch_id, item.quantity || 1, item.price)
-                );
-
-                queries.push(
-                    env.DB.prepare('UPDATE products SET stock = stock - ? WHERE id = ?').bind(item.quantity || 1, item.watch_id)
-                );
-            }
+        for (const item of items) {
+            queries.push(
+                env.DB.prepare('INSERT INTO order_items (id, order_id, product_id, quantity, price) VALUES (?1,?2,?3,?4,?5)')
+                      .bind(crypto.randomUUID(), orderId, item.watch_id, item.quantity, item.price)
+            );
+            // Prevent stock going below 0 — WHERE stock >= quantity acts as a guard
+            queries.push(
+                env.DB.prepare('UPDATE products SET stock = stock - ?1 WHERE id = ?2 AND stock >= ?1')
+                      .bind(item.quantity, item.watch_id)
+            );
         }
 
-        // Execute batch
         await env.DB.batch(queries);
 
-        // 3. Google Forms Webhook Automation
+        // ── Google Forms webhook (fire-and-forget) ────────────────────────────
         if (env.GOOGLE_FORM_URL) {
             try {
-                // Parse items into readable strings for Google Sheets
-                const watchesPurchased = items?.map(item => item.name).join(", ") || "";
-                const quantities = items?.map(item => `${item.name}: ${item.quantity || 1}`).join("\n") || "";
-
-                const formBody = new URLSearchParams();
-
-                // Use environment variables for the Google Form entry IDs, fallback to placeholders string
-                formBody.append(env.FORM_ENTRY_ORDER_ID || 'entry.xxxxxx1', orderId);
-                formBody.append(env.FORM_ENTRY_CLIENT_NAME || 'entry.xxxxxx2', customer_name || "");
-                formBody.append(env.FORM_ENTRY_CLIENT_EMAIL || 'entry.xxxxxx3', customer_email || "");
-                formBody.append(env.FORM_ENTRY_WATCHES || 'entry.xxxxxx4', watchesPurchased);
-                formBody.append(env.FORM_ENTRY_QUANTITY || 'entry.xxxxxx5', quantities);
-                formBody.append(env.FORM_ENTRY_TOTAL_PRICE || 'entry.xxxxxx6', total_amount ? total_amount.toString() : "0");
-                formBody.append(env.FORM_ENTRY_CURRENCY || 'entry.xxxxxx7', 'USD');
-                formBody.append(env.FORM_ENTRY_STATUS || 'entry.xxxxxx8', status || 'pending');
-                formBody.append(env.FORM_ENTRY_DATE || 'entry.xxxxxx9', new Date().toISOString().split('T')[0]);
-
-                // Perform the POST request to Google Forms without blocking the response
-                const formResponsePromise = fetch(env.GOOGLE_FORM_URL, {
+                const watchNames = items.map(i => i.name || i.watch_id).join(', ');
+                const quantities = items.map(i => `${i.name || i.watch_id}: ${i.quantity}`).join('\n');
+                const formBody   = new URLSearchParams();
+                formBody.append(env.FORM_ENTRY_ORDER_ID     || 'entry.1', orderId);
+                formBody.append(env.FORM_ENTRY_CLIENT_NAME  || 'entry.2', customer_name?.trim() || '');
+                formBody.append(env.FORM_ENTRY_CLIENT_EMAIL || 'entry.3', user.email);
+                formBody.append(env.FORM_ENTRY_WATCHES      || 'entry.4', watchNames);
+                formBody.append(env.FORM_ENTRY_QUANTITY     || 'entry.5', quantities);
+                formBody.append(env.FORM_ENTRY_TOTAL_PRICE  || 'entry.6', total_amount.toString());
+                formBody.append(env.FORM_ENTRY_CURRENCY     || 'entry.7', 'USD');
+                formBody.append(env.FORM_ENTRY_STATUS       || 'entry.8', 'pending');
+                formBody.append(env.FORM_ENTRY_DATE         || 'entry.9', new Date().toISOString().split('T')[0]);
+                await fetch(env.GOOGLE_FORM_URL, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: formBody.toString()
-                }).catch(err => {
-                    console.error("Failed to submit to Google Form:", err);
-                });
-
-                // Standard way to ensure async operations complete if the worker returns
-                // (Depends on if context is available, but making the fetch directly works in most cases here)
-                // We're deliberately just firing and not strictly awaiting it to avoid slowing down checkout,
-                // or we await it depending on preference. Awaiting it so we can log:
-                await formResponsePromise;
-
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formBody.toString(),
+                }).catch(e => console.error('[orders] Google Forms error:', e.message));
             } catch (formErr) {
-                console.error("Google Forms Automation Error:", formErr);
-                // We DO NOT throw the error here because the order was successfully saved in our DB.
+                console.error('[orders] Google Forms error:', formErr.message);
             }
         }
 
-        return Response.json({ success: true, orderId: orderId, total: total_amount });
+        console.log(`[audit] Order created: id=${orderId} client=${clientId} total=${total_amount}`);
+
+        return new Response(JSON.stringify({ success: true, orderId }), {
+            status: 201,
+            headers: { 'Content-Type': 'application/json' },
+        });
     } catch (err) {
-        return new Response(JSON.stringify({ error: err.message }), { status: 500 });
+        console.error('[orders] Unexpected error:', err.message);
+        return safeError(500);
     }
 }

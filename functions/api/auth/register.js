@@ -1,32 +1,54 @@
 import bcrypt from 'bcryptjs';
+import { isValidEmail, safeError } from '../../_shared/auth.js';
 
 export async function onRequestPost({ request, env }) {
     try {
-        const data = await request.json();
-        const { email, password, name, phone } = data;
-
-        if (!email || !password || !name) {
-            return new Response(JSON.stringify({ error: "Missing required fields" }), { status: 400 });
+        let body;
+        try {
+            body = await request.json();
+        } catch {
+            return safeError(400, 'Invalid JSON');
         }
 
-        // Check if user exists
-        const existing = await env.DB.prepare('SELECT id FROM clients WHERE email = ?').bind(email).first();
-        if (existing) {
-            return new Response(JSON.stringify({ error: "Email already in use" }), { status: 409 });
+        const { email, password, name, phone } = body;
+
+        // Input validation
+        if (!email || !password) return safeError(400, 'Missing required fields');
+        if (!isValidEmail(email)) return safeError(400, 'Invalid email format');
+        if (typeof password !== 'string' || password.length < 8) {
+            return safeError(400, 'Password must be at least 8 characters');
+        }
+        if (password.length > 128) return safeError(400, 'Password too long');
+        if (name && (typeof name !== 'string' || name.length > 100)) {
+            return safeError(400, 'Invalid name');
+        }
+        if (phone && (typeof phone !== 'string' || phone.length > 30)) {
+            return safeError(400, 'Invalid phone');
         }
 
-        // Hash password
-        const salt = bcrypt.genSaltSync(10);
-        const hash = bcrypt.hashSync(password, salt);
+        const normalizedEmail = email.toLowerCase().trim();
+
+        // Check if user exists — parameterised
+        const existing = await env.DB
+            .prepare('SELECT id FROM clients WHERE email = ?1')
+            .bind(normalizedEmail)
+            .first();
+        if (existing) return safeError(409, 'Email already in use');
+
+        const hash = await bcrypt.hash(password, 12); // cost 12 for production
         const clientId = crypto.randomUUID();
 
-        // Insert to D1
-        await env.DB.prepare('INSERT INTO clients (id, email, name, password_hash, phone, role) VALUES (?, ?, ?, ?, ?, ?)')
-            .bind(clientId, email, name, hash, phone || '', 'user')
+        await env.DB
+            .prepare('INSERT INTO clients (id, email, name, password_hash, phone, role) VALUES (?1, ?2, ?3, ?4, ?5, ?6)')
+            .bind(clientId, normalizedEmail, name?.trim() || normalizedEmail.split('@')[0], hash, phone?.trim() || null, 'user')
             .run();
 
-        return Response.json({ success: true, clientId, email, name });
+        return new Response(JSON.stringify({ success: true }), {
+            status: 201,
+            headers: { 'Content-Type': 'application/json' },
+        });
     } catch (err) {
-        return new Response(JSON.stringify({ error: err.message }), { status: 500 });
+        console.error('[register] Unexpected error:', err.message);
+        return safeError(500);
     }
 }

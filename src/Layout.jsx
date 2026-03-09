@@ -69,7 +69,7 @@ export default function Layout({ children, currentPageName }) {
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const isHome = currentPageName === "Home";
 
-  const adminEmails = ["admin112874@chronoluxe.com", "uberuhanunal@gmail.com", "templateseverlasting@gmail.com"];
+  const adminEmails = ["admin112874@chronoluxe.com", "uberuhanunal@gmail.com", "templateseverlasting@gmail.com", "santis.watches.managment@gmail.com"];
   const isAdmin = user?.role === "admin" || (user?.email && adminEmails.includes(user.email));
 
   return (

@@ -1,9 +1,38 @@
-#env
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+build.log
+
+# Environment files (SENSITIVE - API keys, tokens, secrets)
 .env
 .env.*
+*.local
+
+# Cloudflare
+.wrangler/
+wrangler.toml
+
+# Temporary / internal scripts (may contain credentials)
+.tmp/
+
+# Internal dev docs & setup tools (not part of the running app)
+architecture/
+tools/
+gemini.md
+DESIGN.md
+schema.sql
+seed.sql
+
+# Agent / AI tool configs
+.agents/
+.claude/
+.gemini/
 
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -11,27 +40,14 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
-.wrangler/
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
 .DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-
-.env
-
-
-# AGENTS
-.agents
-tools/01_cloudflare_handshake.py
-architecture/01_cloudflare_setup.md
+Thumbs.db

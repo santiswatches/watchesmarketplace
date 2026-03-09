@@ -50,8 +50,11 @@
 import Admin from './pages/Admin';
 import Checkout from './pages/Checkout';
 import Home from './pages/Home';
+import Login from './pages/Login';
 import MyOrders from './pages/MyOrders';
 import ProductDetail from './pages/ProductDetail';
+import Profile from './pages/Profile';
+import Register from './pages/Register';
 import Shop from './pages/Shop';
 import __Layout from './Layout.jsx';
 
@@ -60,8 +63,11 @@ export const PAGES = {
     "Admin": Admin,
     "Checkout": Checkout,
     "Home": Home,
+    "Login": Login,
     "MyOrders": MyOrders,
     "ProductDetail": ProductDetail,
+    "Profile": Profile,
+    "Register": Register,
     "Shop": Shop,
 }
 

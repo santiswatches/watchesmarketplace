@@ -4,23 +4,43 @@
 "Santi's Watches" is a premium online marketplace for high-end, luxury watch reselling. 
 The interface must project **Security**, **Trust**, **Exclusivity**, and a **Flawless Shopping Experience**.
 
+"Santi's Watches" must feel like a private luxury watch gallery, not a generic ecommerce shop.
+
+The experience should resemble browsing watches in:
+- a high-end boutique
+- a private dealer catalogue
+
+Key feelings:
+- Discreet luxury
+- Confidence
+- Collector culture
+- Precision engineering
+
+Avoid anything that feels:
+- flashy
+- cheap
+- overly animated
+- loud
+
+Luxury UI rule: Luxury feels quiet, confident, and spacious.
+
 - **Theme:** Dark Mode by default. Represents luxury and highlights the details of metallic/gold materials.
-- **Vibe:** Minimalist, cinematic, professional, clean geometry, subtle glow effects. No aggressive colors.
+- **Vibe:** Minimalist, cinematic, professional, clean geometry. No aggressive colors. Luxurious, clean...
 
 ## 2. Color Palette
-- **Background:** `#09090b` (zinc-950) with subtle starry/glassy reflections or gradients `#18181b` (zinc-900).
-- **Surface / Cards:** `#18181b` (zinc-900) or `#27272a` (zinc-800) with deep shadows and `backdrop-blur` for glassmorphism.
-- **Accents (Primary):**
-  - **Gold:** `#bf953f` to `#fcf6ba` (metallic gradient) used sparingly for CTA buttons (Checkout) and premium highlights.
-  - **Silver/Steel:** `#e2e8f0` (slate-200) for secondary accents and typical borders.
+- **Background (Blackmode default):** #0D0D0D
+- **Surface / Cards (Darkmode default add for white mode):** #262626
+- **Accents (Primary):** 
+  - **Blue:** #5A7E8C
+  - **Silver/Steel:** #686868ff 
 - **Text:** 
-  - **Primary:** `#f8fafc` (slate-50) for headings and high emphasis.
-  - **Muted/Secondary:** `#a1a1aa` (zinc-400) for descriptions, specs, and secondary info.
-- **Borders:** `#27272a` (zinc-800) or `border-white/10` for subtle separation.
+  - **Primary:** #8FB6BF
+  - **Muted/Secondary:** #455359 
+- **Borders:** #F2F2F2
 
 ## 3. Typography
 - **Headings (Brand/Display):** `Playfair Display` or `Cinzel` (or a high-end serif equivalent). Used for watch names, big promos, and hero titles.
-- **Body & UI Elements:** `Inter` or `Geist` (Sans-serif). used for prices, specs, buttons, and navigation. 
+- **Body & UI Elements:** `Inter` used for prices, specs, buttons, and navigation. 
 - **Tracking/Spacing:** Generous letter-spacing (uppercase tracking) on small labels. Clean line-height for body.
 
 ## 4. Layout & Interactions

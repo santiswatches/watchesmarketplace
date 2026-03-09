@@ -19,7 +19,7 @@ export default function WatchCard({ watch, index = 0, onAddToCart }) {
       className="group relative"
     >
       <Link to={createPageUrl("ProductDetail") + `?id=${watch.id}`}>
-        <div className="relative aspect-square overflow-hidden bg-[#111] rounded-sm">
+        <div className="relative aspect-square overflow-hidden bg-card border border-border/50 rounded-sm">
           <img
             src={watch.image_url || "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=600&q=80"}
             alt={watch.name}
@@ -31,7 +31,7 @@ export default function WatchCard({ watch, index = 0, onAddToCart }) {
           {/* Badges */}
           <div className="absolute top-3 left-3 flex flex-col gap-2">
             {watch.category === "new_arrival" && (
-              <Badge className="bg-[#C9A962] text-[#0A0A0A] text-[10px] tracking-[0.15em] uppercase rounded-none px-3 py-1 font-medium hover:bg-[#C9A962]">
+              <Badge className="bg-gold text-primary-foreground text-[10px] tracking-[0.15em] uppercase rounded-none px-3 py-1 font-medium hover:bg-gold-light">
                 New
               </Badge>
             )}
@@ -41,7 +41,7 @@ export default function WatchCard({ watch, index = 0, onAddToCart }) {
               </Badge>
             )}
             {watch.category === "limited_edition" && (
-              <Badge className="bg-white text-[#0A0A0A] text-[10px] tracking-[0.15em] uppercase rounded-none px-3 py-1 font-medium hover:bg-white">
+              <Badge className="bg-white text-black text-[10px] tracking-[0.15em] uppercase rounded-none px-3 py-1 font-medium hover:bg-white/90">
                 Limited
               </Badge>
             )}
@@ -55,9 +55,9 @@ export default function WatchCard({ watch, index = 0, onAddToCart }) {
                 e.stopPropagation();
                 onAddToCart?.(watch);
               }}
-              className="w-10 h-10 bg-white flex items-center justify-center hover:bg-[#C9A962] transition-colors duration-200"
+              className="w-10 h-10 bg-white flex items-center justify-center hover:bg-gold transition-colors duration-200"
             >
-              <ShoppingBag className="w-4 h-4 text-[#0A0A0A]" />
+              <ShoppingBag className="w-4 h-4 text-black" />
             </button>
             <button
               onClick={(e) => {
@@ -74,18 +74,18 @@ export default function WatchCard({ watch, index = 0, onAddToCart }) {
 
       {/* Info */}
       <div className="mt-4 space-y-1">
-        <p className="text-[10px] text-[#C9A962] tracking-[0.2em] uppercase">{watch.brand}</p>
+        <p className="text-[10px] text-gold tracking-[0.2em] uppercase">{watch.brand}</p>
         <Link to={createPageUrl("ProductDetail") + `?id=${watch.id}`}>
-          <h3 className="text-white text-sm font-light tracking-wide hover:text-[#C9A962] transition-colors">
+          <h3 className="text-foreground text-sm font-light tracking-wide hover:text-gold transition-colors">
             {watch.name}
           </h3>
         </Link>
         <div className="flex items-center gap-3 pt-1">
-          <span className="text-white font-light text-sm">
+          <span className="text-foreground font-light text-sm">
             ${watch.price?.toLocaleString()}
           </span>
           {watch.original_price && watch.original_price > watch.price && (
-            <span className="text-white/30 line-through text-xs">
+            <span className="text-muted-foreground line-through text-xs">
               ${watch.original_price?.toLocaleString()}
             </span>
           )}

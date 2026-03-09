@@ -15,7 +15,7 @@ export default function Newsletter() {
   };
 
   return (
-    <section className="bg-[#0F0F0F] py-24">
+    <section className="bg-card py-24 border-t border-border/50">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -23,11 +23,11 @@ export default function Newsletter() {
           viewport={{ once: true }}
           className="text-center max-w-xl mx-auto"
         >
-          <p className="text-[#C9A962] tracking-[0.3em] uppercase text-xs mb-4">Stay Updated</p>
-          <h2 className="text-2xl md:text-3xl text-white font-light tracking-tight mb-3">
+          <p className="text-gold tracking-[0.3em] uppercase text-xs mb-4">Stay Updated</p>
+          <h2 className="text-2xl md:text-3xl text-foreground font-light tracking-tight mb-3">
             Join Our World
           </h2>
-          <p className="text-white/40 text-sm font-light leading-relaxed mb-8">
+          <p className="text-muted-foreground text-sm font-light leading-relaxed mb-8">
             Be the first to discover new arrivals, exclusive offers, and the stories behind our timepieces.
           </p>
 
@@ -35,7 +35,7 @@ export default function Newsletter() {
             <motion.p
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-[#C9A962] text-sm"
+              className="text-gold text-sm"
             >
               Thank you for subscribing. Welcome to our world.
             </motion.p>
@@ -46,14 +46,14 @@ export default function Newsletter() {
                 placeholder="Your email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 bg-white/5 border border-white/10 border-r-0 px-5 py-3.5 text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-[#C9A962]/40 transition-colors"
+                className="flex-1 bg-background/50 border border-border px-5 py-3.5 text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:border-gold transition-colors"
                 required
               />
               <button
                 type="submit"
-                className="bg-[#C9A962] px-6 flex items-center justify-center hover:bg-[#D4B870] transition-colors"
+                className="bg-gold px-6 flex items-center justify-center hover:bg-gold-light transition-colors"
               >
-                <Send className="w-4 h-4 text-[#0A0A0A]" />
+                <Send className="w-4 h-4 text-primary-foreground" />
               </button>
             </form>
           )}

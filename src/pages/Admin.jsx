@@ -161,14 +161,14 @@ export default function Admin() {
 
     setUploadingImage(true);
     try {
-      const uploadPromises = files.map(file => 
+      const uploadPromises = files.map(file =>
         base44.integrations.Core.UploadFile({ file })
       );
       const results = await Promise.all(uploadPromises);
       const newUrls = results.map(r => r.file_url);
-      setFormData({ 
-        ...formData, 
-        gallery_urls: [...(formData.gallery_urls || []), ...newUrls] 
+      setFormData({
+        ...formData,
+        gallery_urls: [...(formData.gallery_urls || []), ...newUrls]
       });
       toast.success(`${files.length} image(s) uploaded`);
     } catch (error) {
@@ -190,14 +190,14 @@ export default function Admin() {
 
     setUploadingImage(true);
     try {
-      const uploadPromises = files.map(file => 
+      const uploadPromises = files.map(file =>
         base44.integrations.Core.UploadFile({ file })
       );
       const results = await Promise.all(uploadPromises);
       const newUrls = results.map(r => r.file_url);
-      setNewVariant({ 
-        ...newVariant, 
-        gallery_urls: [...(newVariant.gallery_urls || []), ...newUrls] 
+      setNewVariant({
+        ...newVariant,
+        gallery_urls: [...(newVariant.gallery_urls || []), ...newUrls]
       });
       toast.success(`${files.length} image(s) uploaded`);
     } catch (error) {
@@ -322,18 +322,18 @@ export default function Admin() {
 
   if (isLoading) {
     return (
-      <div className="bg-[#0A0A0A] min-h-screen pt-24 flex items-center justify-center">
-        <div className="text-white/40">Loading...</div>
+      <div className="bg-background min-h-screen pt-24 flex items-center justify-center">
+        <div className="text-muted-foreground">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="bg-[#0A0A0A] min-h-screen pt-24 pb-20">
+    <div className="bg-background min-h-screen pt-24 pb-20">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         <div className="flex items-center justify-between mb-10">
           <div>
-            <h1 className="text-3xl text-white font-light tracking-tight">Admin Dashboard</h1>
+            <h1 className="text-3xl text-foreground font-light tracking-tight">Admin Dashboard</h1>
             <p className="text-white/40 text-sm mt-1">Manage watch inventory and brands</p>
           </div>
           <div className="flex gap-3">
@@ -346,7 +346,7 @@ export default function Admin() {
             </Button>
             <Button
               onClick={() => setShowDialog(true)}
-              className="bg-[#C9A962] text-[#0A0A0A] hover:bg-[#D4B870] gap-2"
+              className="bg-gold text-primary-foreground hover:bg-gold-light gap-2"
             >
               <Plus className="w-4 h-4" /> Add Watch
             </Button>
@@ -359,7 +359,7 @@ export default function Admin() {
               key={watch.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-[#111] border border-white/10 rounded-sm overflow-hidden"
+              className="bg-card border border-border/50 rounded-sm overflow-hidden"
             >
               <div className="aspect-square bg-[#1A1A1A]">
                 <img
@@ -369,8 +369,8 @@ export default function Admin() {
                 />
               </div>
               <div className="p-4">
-                <p className="text-[#C9A962] text-[10px] tracking-[0.2em] uppercase">{watch.brand}</p>
-                <h3 className="text-white text-sm font-light mt-1 truncate">{watch.name}</h3>
+                <p className="text-gold text-[10px] tracking-[0.2em] uppercase">{watch.brand}</p>
+                <h3 className="text-foreground text-sm font-light mt-1 truncate">{watch.name}</h3>
                 <p className="text-white/60 text-sm mt-2">${watch.price?.toLocaleString()}</p>
                 <div className="flex gap-2 mt-4">
                   <Button
@@ -396,9 +396,9 @@ export default function Admin() {
         </div>
 
         <Dialog open={showDialog} onOpenChange={(open) => !open && resetForm()}>
-          <DialogContent className="bg-[#111] border-white/10 text-white max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="bg-card border-border/50 text-foreground max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="text-white">
+              <DialogTitle className="text-foreground">
                 {editingWatch ? "Edit Watch" : "Add New Watch"}
               </DialogTitle>
             </DialogHeader>
@@ -607,7 +607,7 @@ export default function Admin() {
               {/* Variants Section */}
               <div className="border-t border-white/10 pt-6 mt-6">
                 <Label className="text-white text-sm mb-4 block">Variants (Colors/Options)</Label>
-                
+
                 {/* Existing Variants */}
                 {formData.variants && formData.variants.length > 0 && (
                   <div className="space-y-2 mb-4">
@@ -708,7 +708,7 @@ export default function Admin() {
                   <Button
                     type="button"
                     onClick={addVariant}
-                    className="w-full bg-[#C9A962] text-[#0A0A0A] hover:bg-[#D4B870] h-8 text-xs"
+                    className="w-full bg-gold text-primary-foreground hover:bg-gold-light h-8 text-xs"
                   >
                     <Plus className="w-3 h-3 mr-1" /> Add This Variant
                   </Button>
@@ -727,7 +727,7 @@ export default function Admin() {
                 <Button
                   type="submit"
                   disabled={createMutation.isPending || updateMutation.isPending}
-                  className="flex-1 bg-[#C9A962] text-[#0A0A0A] hover:bg-[#D4B870]"
+                  className="flex-1 bg-gold text-primary-foreground hover:bg-gold-light"
                 >
                   {editingWatch ? "Update" : "Create"}
                 </Button>
@@ -737,9 +737,9 @@ export default function Admin() {
         </Dialog>
 
         <Dialog open={showBrandDialog} onOpenChange={setShowBrandDialog}>
-          <DialogContent className="bg-[#111] border-white/10 text-white max-w-md">
+          <DialogContent className="bg-card border-border/50 text-foreground max-w-md">
             <DialogHeader>
-              <DialogTitle className="text-white">Manage Brands</DialogTitle>
+              <DialogTitle className="text-foreground">Manage Brands</DialogTitle>
             </DialogHeader>
 
             <form onSubmit={handleAddBrand} className="space-y-4 mt-4">
@@ -753,7 +753,7 @@ export default function Admin() {
                 <Button
                   type="submit"
                   disabled={createBrandMutation.isPending}
-                  className="bg-[#C9A962] text-[#0A0A0A] hover:bg-[#D4B870]"
+                  className="bg-gold text-primary-foreground hover:bg-gold-light"
                 >
                   <Plus className="w-4 h-4" />
                 </Button>

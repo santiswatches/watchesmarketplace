@@ -4,7 +4,7 @@ import { createPageUrl } from "../utils";
 import { base44 } from "@/services/api";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { SlidersHorizontal, X, ChevronDown } from "lucide-react";
+import { SlidersHorizontal, X, ChevronDown, Search } from "lucide-react";
 import WatchCard from "../components/shared/WatchCard";
 import {
   Select,
@@ -22,8 +22,10 @@ const CATEGORIES = [
   { value: "bestseller", label: "Bestsellers" },
   { value: "limited_edition", label: "Limited Edition" },
 ];
+const MATERIALS = ["All", "Gold", "Rose Gold", "Stainless Steel", "Titanium", "Platinum", "Ceramic"];
 const SORT_OPTIONS = [
-  { value: "newest", label: "Newest First" },
+  { value: "newest", label: "Time: Newest to Oldest" },
+  { value: "oldest", label: "Time: Oldest to Newest" },
   { value: "price_asc", label: "Price: Low to High" },
   { value: "price_desc", label: "Price: High to Low" },
   { value: "name_asc", label: "Name: A-Z" },
@@ -34,21 +36,29 @@ export default function Shop() {
   const urlParams = new URLSearchParams(window.location.search);
   const initialBrand = urlParams.get("brand") || "All";
   const initialCategory = urlParams.get("category") || "all";
+  const initialMaterial = urlParams.get("material") || "All";
 
   const [brand, setBrand] = useState(initialBrand);
   const [category, setCategory] = useState(initialCategory);
+  const [material, setMaterial] = useState(initialMaterial);
+  const [searchQuery, setSearchQuery] = useState("");
   const [sort, setSort] = useState("newest");
   const [showFilters, setShowFilters] = useState(false);
 
   const { data: watches = [], isLoading } = useQuery({
     queryKey: ["watches-shop"],
-    queryFn: () => base44.entities.Watch.list("-created_date", 100),
+    queryFn: () => base44.entities.Watch.list(),
   });
 
   const filteredWatches = useMemo(() => {
     let result = [...watches];
+    if (searchQuery.trim() !== "") {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(w => (w.name?.toLowerCase().includes(q)) || (w.brand?.toLowerCase().includes(q)) || (w.description?.toLowerCase().includes(q)));
+    }
     if (brand !== "All") result = result.filter((w) => w.brand === brand);
     if (category !== "all") result = result.filter((w) => w.category === category);
+    if (material !== "All") result = result.filter((w) => w.material === material || w.name?.includes(material));
 
     switch (sort) {
       case "price_asc":
@@ -60,11 +70,17 @@ export default function Shop() {
       case "name_asc":
         result.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
         break;
+      case "newest":
+        result.sort((a, b) => new Date(b.created_date || 0) - new Date(a.created_date || 0));
+        break;
+      case "oldest":
+        result.sort((a, b) => new Date(a.created_date || 0) - new Date(b.created_date || 0));
+        break;
       default:
         break;
     }
     return result;
-  }, [watches, brand, category, sort]);
+  }, [watches, brand, category, material, sort, searchQuery]);
 
   const addToCart = async (watch) => {
     const isAuthenticated = await base44.auth.isAuthenticated();
@@ -88,10 +104,10 @@ export default function Shop() {
     window.__openCart?.();
   };
 
-  const hasActiveFilters = brand !== "All" || category !== "all";
+  const hasActiveFilters = brand !== "All" || category !== "all" || material !== "All" || searchQuery !== "";
 
   return (
-    <div className="bg-[#0A0A0A] min-h-screen pt-24 md:pt-28 pb-20">
+    <div className="bg-background min-h-screen pt-24 md:pt-28 pb-20">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         {/* Header */}
         <motion.div
@@ -99,66 +115,91 @@ export default function Shop() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-10"
         >
-          <p className="text-[#C9A962] tracking-[0.3em] uppercase text-xs mb-2">Collection</p>
-          <h1 className="text-3xl md:text-5xl text-white font-light tracking-tight">
+          <p className="text-gold tracking-[0.3em] uppercase text-xs mb-2">Collection</p>
+          <h1 className="text-3xl md:text-5xl text-foreground font-light tracking-tight">
             Our Timepieces
           </h1>
         </motion.div>
 
         {/* Filters Bar */}
-        <div className="flex flex-wrap items-center gap-4 mb-10 border-b border-white/5 pb-6">
-          {/* Brand pills (desktop) */}
-          <div className="hidden md:flex items-center gap-2 flex-wrap">
-            {BRANDS.map((b) => (
-              <button
-                key={b}
-                onClick={() => setBrand(b)}
-                className={`px-4 py-2 text-xs tracking-[0.1em] uppercase transition-all duration-300 rounded-sm ${
-                  brand === b
-                    ? "bg-[#C9A962] text-[#0A0A0A] font-medium"
-                    : "bg-white/5 text-white/50 hover:bg-white/10 hover:text-white/80"
-                }`}
-              >
-                {b}
-              </button>
-            ))}
+        <div className="flex flex-col gap-6 mb-10 border-b border-white/5 pb-6">
+          {/* Search Bar */}
+          <div className="relative max-w-md w-full">
+            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Search timepieces..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 bg-white/5 border border-white/10 px-5 py-2.5 text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:border-gold transition-colors"
+            />
           </div>
 
-          {/* Mobile filter toggle */}
-          <button
-            className="md:hidden flex items-center gap-2 px-4 py-2 border border-white/10 text-white/60 text-xs tracking-[0.1em] uppercase"
-            onClick={() => setShowFilters(!showFilters)}
-          >
-            <SlidersHorizontal className="w-3.5 h-3.5" />
-            Filters
-          </button>
+          <div className="flex flex-wrap items-center gap-4">
+            {/* Brand pills (desktop) */}
+            <div className="hidden md:flex items-center gap-2 flex-wrap">
+              {BRANDS.map((b) => (
+                <button
+                  key={b}
+                  onClick={() => setBrand(b)}
+                  className={`px-4 py-2 text-xs tracking-[0.1em] uppercase transition-all duration-300 rounded-sm ${brand === b
+                    ? "bg-gold text-primary-foreground font-medium"
+                    : "bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-white/80"
+                    }`}
+                >
+                  {b}
+                </button>
+              ))}
+            </div>
 
-          {/* Category & Sort */}
-          <div className="flex items-center gap-3 ml-auto">
-            <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger className="w-40 bg-white/5 border-white/10 text-white/70 text-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-[#1A1A1A] border-white/10">
-                {CATEGORIES.map((c) => (
-                  <SelectItem key={c.value} value={c.value} className="text-white/70 text-xs focus:bg-white/10 focus:text-white">
-                    {c.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={sort} onValueChange={setSort}>
-              <SelectTrigger className="w-44 bg-white/5 border-white/10 text-white/70 text-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-[#1A1A1A] border-white/10">
-                {SORT_OPTIONS.map((s) => (
-                  <SelectItem key={s.value} value={s.value} className="text-white/70 text-xs focus:bg-white/10 focus:text-white">
-                    {s.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {/* Mobile filter toggle */}
+            <button
+              className="md:hidden flex items-center gap-2 px-4 py-2 border border-white/10 text-white/60 text-xs tracking-[0.1em] uppercase"
+              onClick={() => setShowFilters(!showFilters)}
+            >
+              <SlidersHorizontal className="w-3.5 h-3.5" />
+              Filters
+            </button>
+
+            {/* Category & Sort */}
+            <div className="flex items-center gap-3 ml-auto">
+              <Select value={category} onValueChange={setCategory}>
+                <SelectTrigger className="w-40 bg-white/5 border-white/10 text-white/70 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-card border-border/50">
+                  {CATEGORIES.map((c) => (
+                    <SelectItem key={c.value} value={c.value} className="text-white/70 text-xs focus:bg-white/10 focus:text-white">
+                      {c.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={material} onValueChange={setMaterial}>
+                <SelectTrigger className="w-40 bg-white/5 border-white/10 text-white/70 text-xs">
+                  <SelectValue placeholder="Material" />
+                </SelectTrigger>
+                <SelectContent className="bg-card border-border/50">
+                  {MATERIALS.map((m) => (
+                    <SelectItem key={m} value={m} className="text-white/70 text-xs focus:bg-white/10 focus:text-white">
+                      {m}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={sort} onValueChange={setSort}>
+                <SelectTrigger className="w-44 bg-white/5 border-white/10 text-white/70 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-card border-border/50">
+                  {SORT_OPTIONS.map((s) => (
+                    <SelectItem key={s.value} value={s.value} className="text-white/70 text-xs focus:bg-white/10 focus:text-white">
+                      {s.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
 
@@ -173,11 +214,10 @@ export default function Shop() {
               <button
                 key={b}
                 onClick={() => setBrand(b)}
-                className={`px-3 py-1.5 text-[10px] tracking-[0.1em] uppercase rounded-sm ${
-                  brand === b
-                    ? "bg-[#C9A962] text-[#0A0A0A]"
-                    : "bg-white/5 text-white/50"
-                }`}
+                className={`px-3 py-1.5 text-[10px] tracking-[0.1em] uppercase rounded-sm ${brand === b
+                  ? "bg-gold text-primary-foreground"
+                  : "bg-white/5 text-muted-foreground"
+                  }`}
               >
                 {b}
               </button>
@@ -192,7 +232,7 @@ export default function Shop() {
             {brand !== "All" && (
               <button
                 onClick={() => setBrand("All")}
-                className="flex items-center gap-1 px-3 py-1 bg-[#C9A962]/10 text-[#C9A962] text-xs rounded-sm"
+                className="flex items-center gap-1 px-3 py-1 bg-gold/10 text-gold text-xs rounded-sm"
               >
                 {brand} <X className="w-3 h-3" />
               </button>
@@ -200,9 +240,25 @@ export default function Shop() {
             {category !== "all" && (
               <button
                 onClick={() => setCategory("all")}
-                className="flex items-center gap-1 px-3 py-1 bg-[#C9A962]/10 text-[#C9A962] text-xs rounded-sm"
+                className="flex items-center gap-1 px-3 py-1 bg-gold/10 text-gold text-xs rounded-sm"
               >
                 {CATEGORIES.find((c) => c.value === category)?.label} <X className="w-3 h-3" />
+              </button>
+            )}
+            {material !== "All" && (
+              <button
+                onClick={() => setMaterial("All")}
+                className="flex items-center gap-1 px-3 py-1 bg-gold/10 text-gold text-xs rounded-sm"
+              >
+                {material} <X className="w-3 h-3" />
+              </button>
+            )}
+            {searchQuery !== "" && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="flex items-center gap-1 px-3 py-1 bg-gold/10 text-gold text-xs rounded-sm"
+              >
+                Search: {searchQuery} <X className="w-3 h-3" />
               </button>
             )}
           </div>

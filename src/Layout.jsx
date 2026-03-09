@@ -77,8 +77,8 @@ export default function Layout({ children, currentPageName }) {
       {/* Navigation */}
       <header
         className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ${scrolled || !isHome
-            ? "bg-background/95 backdrop-blur-md border-b border-border"
-            : "bg-transparent"
+          ? "bg-background/95 backdrop-blur-md border-b border-border"
+          : "bg-transparent"
           }`}
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
@@ -90,8 +90,8 @@ export default function Layout({ children, currentPageName }) {
                   key={link.label}
                   to={createPageUrl(link.page) + (link.params || "")}
                   className={`text-xs tracking-[0.15em] uppercase transition-colors duration-300 ${link.label === "Sale"
-                      ? "text-gold hover:text-gold-light"
-                      : "text-muted-foreground hover:text-gold"
+                    ? "text-gold hover:text-gold-light"
+                    : "text-muted-foreground hover:text-gold"
                     }`}
                 >
                   {link.label}
@@ -138,16 +138,21 @@ export default function Layout({ children, currentPageName }) {
                         <span className="hidden md:block text-xs">{user.full_name || user.email}</span>
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="bg-[#1A1A1A] border-white/10 text-white">
+                    <DropdownMenuContent className="bg-card border-border/50 text-foreground w-48">
                       <DropdownMenuItem asChild className="focus:bg-white/10 cursor-pointer">
-                        <Link to={createPageUrl("MyOrders")} className="flex items-center gap-2 text-xs">
-                          <User className="w-3 h-3" /> My Orders
+                        <Link to={createPageUrl("Profile")} className="flex items-center gap-2 text-sm px-4 py-2">
+                          <User className="w-4 h-4" /> Profile Overview
                         </Link>
                       </DropdownMenuItem>
-                      <DropdownMenuSeparator className="bg-white/10" />
+                      <DropdownMenuItem asChild className="focus:bg-white/10 cursor-pointer">
+                        <Link to={createPageUrl("MyOrders")} className="flex items-center gap-2 text-sm px-4 py-2">
+                          <ShoppingBag className="w-4 h-4" /> My Orders
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator className="bg-border/50" />
                       <DropdownMenuItem onClick={handleLogout} className="focus:bg-white/10 cursor-pointer">
-                        <span className="flex items-center gap-2 text-xs">
-                          <LogOut className="w-3 h-3" /> Logout
+                        <span className="flex items-center gap-2 text-sm px-4 py-2 text-red-500 hover:text-red-400">
+                          <LogOut className="w-4 h-4" /> Logout
                         </span>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -193,8 +198,8 @@ export default function Layout({ children, currentPageName }) {
                     to={createPageUrl(link.page) + (link.params || "")}
                     onClick={() => setMobileMenuOpen(false)}
                     className={`block text-sm tracking-[0.1em] uppercase py-2 transition-colors ${link.label === "Sale"
-                        ? "text-gold hover:text-gold-light"
-                        : "text-muted-foreground hover:text-gold"
+                      ? "text-gold hover:text-gold-light"
+                      : "text-muted-foreground hover:text-gold"
                       }`}
                   >
                     {link.label}
@@ -220,7 +225,7 @@ export default function Layout({ children, currentPageName }) {
       <main>{children}</main>
 
       {/* Footer */}
-      <footer className="bg-card border-t border-border pt-16 pb-8">
+      <footer className="bg-background border-t border-border pt-16 pb-8">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
             <div className="md:col-span-2">
@@ -233,7 +238,7 @@ export default function Layout({ children, currentPageName }) {
               </p>
             </div>
             <div>
-              <h4 className="text-white/60 text-xs tracking-[0.2em] uppercase mb-4">Quick Links</h4>
+              <h4 className="text-muted-foreground text-xs tracking-[0.2em] uppercase mb-4">Quick Links</h4>
               <div className="space-y-3">
                 {["Home", "Shop"].map((page) => (
                   <Link
@@ -247,7 +252,7 @@ export default function Layout({ children, currentPageName }) {
               </div>
             </div>
             <div>
-              <h4 className="text-white/60 text-xs tracking-[0.2em] uppercase mb-4">Support</h4>
+              <h4 className="text-muted-foreground text-xs tracking-[0.2em] uppercase mb-4">Support</h4>
               <div className="space-y-3 text-white/30 text-sm">
                 <p>contact@chronoluxe.com</p>
                 <p>+1 (888) 555-0123</p>

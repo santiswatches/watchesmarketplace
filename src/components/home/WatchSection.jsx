@@ -9,7 +9,7 @@ export default function WatchSection({ title, subtitle, watches, categoryLink, o
   if (!watches || watches.length === 0) return null;
 
   return (
-    <section className="bg-[#0A0A0A] py-20 md:py-28">
+    <section className="bg-background py-20 md:py-28">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         {/* Header */}
         <div className="flex items-end justify-between mb-12">
@@ -19,9 +19,9 @@ export default function WatchSection({ title, subtitle, watches, categoryLink, o
             viewport={{ once: true }}
           >
             {subtitle && (
-              <p className="text-[#C9A962] tracking-[0.3em] uppercase text-xs mb-3">{subtitle}</p>
+              <p className="text-gold tracking-[0.3em] uppercase text-xs mb-3">{subtitle}</p>
             )}
-            <h2 className="text-2xl md:text-4xl text-white font-light tracking-tight">{title}</h2>
+            <h2 className="text-2xl md:text-4xl text-foreground font-light tracking-tight">{title}</h2>
           </motion.div>
           {categoryLink && (
             <motion.div
@@ -31,7 +31,7 @@ export default function WatchSection({ title, subtitle, watches, categoryLink, o
             >
               <Link
                 to={categoryLink}
-                className="group hidden md:flex items-center gap-2 text-white/50 hover:text-[#C9A962] text-sm tracking-wide transition-colors"
+                className="group hidden md:flex items-center gap-2 text-muted-foreground hover:text-gold text-sm tracking-wide transition-colors"
               >
                 View All
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -52,7 +52,7 @@ export default function WatchSection({ title, subtitle, watches, categoryLink, o
           <div className="mt-10 text-center md:hidden">
             <Link
               to={categoryLink}
-              className="inline-flex items-center gap-2 text-[#C9A962] text-sm tracking-wide"
+              className="inline-flex items-center gap-2 text-gold hover:text-gold-light transition-colors text-sm tracking-wide"
             >
               View All <ArrowRight className="w-4 h-4" />
             </Link>

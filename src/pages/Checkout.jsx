@@ -96,7 +96,7 @@ export default function Checkout() {
         onApprove: async (data, actions) => {
           setIsProcessing(true);
           const details = await actions.order.capture();
-          
+
           // Create order in database
           await base44.entities.Order.create({
             customer_email: formData.email || details.payer?.email_address || "",
@@ -136,23 +136,23 @@ export default function Checkout() {
           animate={{ opacity: 1, scale: 1 }}
           className="text-center max-w-md mx-auto px-6"
         >
-          <div className="w-20 h-20 bg-[#C9A962]/10 rounded-full flex items-center justify-center mx-auto mb-6">
-            <ShieldCheck className="w-10 h-10 text-[#C9A962]" />
+          <div className="w-20 h-20 bg-gold/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <ShieldCheck className="w-10 h-10 text-gold" />
           </div>
-          <h1 className="text-3xl text-white font-light mb-3">Order Confirmed</h1>
-          <p className="text-white/40 text-sm font-light mb-8">
+          <h1 className="text-3xl text-foreground font-light mb-3">Order Confirmed</h1>
+          <p className="text-muted-foreground text-sm font-light mb-8">
             Thank you for your purchase. You'll receive a confirmation email shortly.
           </p>
           <div className="flex flex-col gap-3">
             <Link
               to={createPageUrl("MyOrders")}
-              className="bg-[#C9A962] text-[#0A0A0A] py-3 text-xs tracking-[0.15em] uppercase font-medium hover:bg-[#D4B870] transition-colors text-center"
+              className="bg-gold text-primary-foreground py-3 text-xs tracking-[0.15em] uppercase font-medium hover:bg-gold-light transition-colors text-center"
             >
               View My Orders
             </Link>
             <Link
               to={createPageUrl("Home")}
-              className="text-white/40 text-xs tracking-[0.1em] uppercase hover:text-white/60 transition-colors"
+              className="text-muted-foreground text-xs tracking-[0.1em] uppercase hover:text-foreground transition-colors"
             >
               Continue Shopping
             </Link>
@@ -164,17 +164,17 @@ export default function Checkout() {
 
   if (isLoadingAuth) {
     return (
-      <div className="bg-[#0A0A0A] min-h-screen pt-24 flex items-center justify-center">
-        <div className="animate-pulse text-white/30">Loading...</div>
+      <div className="bg-background min-h-screen pt-24 flex items-center justify-center">
+        <div className="animate-pulse text-muted-foreground">Loading...</div>
       </div>
     );
   }
 
   if (cart.length === 0) {
     return (
-      <div className="bg-[#0A0A0A] min-h-screen pt-24 flex flex-col items-center justify-center">
-        <p className="text-white/40 text-lg font-light mb-4">Your cart is empty</p>
-        <Link to={createPageUrl("Shop")} className="text-[#C9A962] text-sm hover:underline">
+      <div className="bg-background min-h-screen pt-24 flex flex-col items-center justify-center">
+        <p className="text-muted-foreground text-lg font-light mb-4">Your cart is empty</p>
+        <Link to={createPageUrl("Shop")} className="text-gold text-sm hover:underline">
           Browse Collection
         </Link>
       </div>
@@ -182,7 +182,7 @@ export default function Checkout() {
   }
 
   return (
-    <div className="bg-[#0A0A0A] min-h-screen pt-20 md:pt-24 pb-20">
+    <div className="bg-background min-h-screen pt-20 md:pt-24 pb-20">
       <div className="max-w-5xl mx-auto px-6 lg:px-12">
         <Link
           to={createPageUrl("Shop")}
@@ -191,7 +191,7 @@ export default function Checkout() {
           <ChevronLeft className="w-4 h-4" /> Continue Shopping
         </Link>
 
-        <h1 className="text-3xl text-white font-light tracking-tight mb-10">Checkout</h1>
+        <h1 className="text-3xl text-foreground font-light tracking-tight mb-10">Checkout</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
           {/* Form */}
@@ -234,8 +234,8 @@ export default function Checkout() {
 
             {/* PayPal */}
             <div>
-              <h2 className="text-white text-sm tracking-[0.15em] uppercase mb-6 flex items-center gap-2">
-                <Lock className="w-4 h-4 text-[#C9A962]" />
+              <h2 className="text-foreground text-sm tracking-[0.15em] uppercase mb-6 flex items-center gap-2">
+                <Lock className="w-4 h-4 text-gold" />
                 Secure Payment
               </h2>
               {isProcessing ? (
@@ -255,7 +255,7 @@ export default function Checkout() {
 
           {/* Order Summary */}
           <div className="lg:col-span-2">
-            <div className="bg-[#111] rounded-sm p-6 sticky top-28">
+            <div className="bg-card rounded-sm p-6 sticky top-28 border border-border/50">
               <h2 className="text-white text-sm tracking-[0.15em] uppercase mb-6">
                 Order Summary
               </h2>
@@ -289,8 +289,8 @@ export default function Checkout() {
                   <span className="text-white">{shipping === 0 ? "Free" : `$${shipping}`}</span>
                 </div>
                 <div className="flex justify-between text-sm pt-3 border-t border-white/5">
-                  <span className="text-white">Total</span>
-                  <span className="text-[#C9A962] text-lg font-light">${grandTotal.toLocaleString()}</span>
+                  <span className="text-foreground">Total</span>
+                  <span className="text-gold text-lg font-light">${grandTotal.toLocaleString()}</span>
                 </div>
               </div>
             </div>

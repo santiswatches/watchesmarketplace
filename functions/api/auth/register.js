@@ -33,7 +33,11 @@ export async function onRequestPost({ request, env }) {
             .prepare('SELECT id FROM clients WHERE email = ?1')
             .bind(normalizedEmail)
             .first();
-        if (existing) return safeError(409, 'Email already in use');
+        if (existing) {
+            return new Response(JSON.stringify({ error: 'An account with this email already exists' }), {
+                status: 409, headers: { 'Content-Type': 'application/json' },
+            });
+        }
 
         const hash = await bcrypt.hash(password, 10); // cost 10 — safe for Workers (12 blocks the event loop)
         const clientId = crypto.randomUUID();

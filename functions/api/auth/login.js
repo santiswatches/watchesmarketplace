@@ -33,12 +33,18 @@ export async function onRequestPost({ request, env }) {
             .bind(email.toLowerCase().trim())
             .first();
 
-        // Generic 401 for both "user not found" and "wrong password"
-        // — avoids leaking whether an email is registered
-        if (!client) return safeError(401, 'Invalid credentials');
+        if (!client) {
+            return new Response(JSON.stringify({ error: 'No account found with that email address' }), {
+                status: 401, headers: { 'Content-Type': 'application/json' },
+            });
+        }
 
         const valid = await bcrypt.compare(password, client.password_hash);
-        if (!valid) return safeError(401, 'Invalid credentials');
+        if (!valid) {
+            return new Response(JSON.stringify({ error: 'Incorrect password' }), {
+                status: 401, headers: { 'Content-Type': 'application/json' },
+            });
+        }
 
         const role = ADMIN_EMAILS.includes(client.email) ? 'admin' : (client.role || 'user');
 

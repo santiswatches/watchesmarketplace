@@ -1,0 +1,12 @@
+{
+  "name": "Santi's Watches",
+  "short_name": "SantiWatches",
+  "description": "Luxury watch collection in Eindhoven, NL",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#c9a96e",
+  "icons": [
+    { "src": "/assets/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

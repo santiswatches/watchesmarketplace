@@ -89,6 +89,7 @@ export default function Login() {
                                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                         className="pl-10 bg-white/5 border-white/10 text-foreground placeholder:text-muted-foreground focus-visible:ring-gold/30"
                                         placeholder="john@example.com"
+                                        autoComplete="email"
                                         required
                                     />
                                 </div>
@@ -109,6 +110,7 @@ export default function Login() {
                                         onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                         className="pl-10 bg-white/5 border-white/10 text-foreground placeholder:text-muted-foreground focus-visible:ring-gold/30"
                                         placeholder="••••••••"
+                                        autoComplete="current-password"
                                         required
                                     />
                                 </div>

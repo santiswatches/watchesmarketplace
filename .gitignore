@@ -13,6 +13,7 @@ build.log
 
 # Cloudflare
 .wrangler/
+.dev.vars
 wrangler.toml
 
 # Temporary / internal scripts (may contain credentials)

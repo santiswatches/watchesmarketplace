@@ -35,7 +35,7 @@ export async function onRequestPost({ request, env }) {
             .first();
         if (existing) return safeError(409, 'Email already in use');
 
-        const hash = await bcrypt.hash(password, 12); // cost 12 for production
+        const hash = await bcrypt.hash(password, 10); // cost 10 — safe for Workers (12 blocks the event loop)
         const clientId = crypto.randomUUID();
 
         await env.DB

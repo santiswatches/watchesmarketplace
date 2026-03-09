@@ -33,14 +33,12 @@ export async function onRequestPost({ request, env }) {
             .bind(email.toLowerCase().trim())
             .first();
 
-        // Always run bcrypt compare to prevent timing-based user enumeration
-        const hashToCheck = client?.password_hash ?? '$2a$12$placeholderHashToPreventTimingAttack000000000000000000';
-        const valid = bcrypt.compareSync(password, hashToCheck);
+        // Generic 401 for both "user not found" and "wrong password"
+        // — avoids leaking whether an email is registered
+        if (!client) return safeError(401, 'Invalid credentials');
 
-        if (!client || !valid) {
-            // Generic message — do not reveal whether email exists
-            return safeError(401, 'Invalid credentials');
-        }
+        const valid = await bcrypt.compare(password, client.password_hash);
+        if (!valid) return safeError(401, 'Invalid credentials');
 
         const role = ADMIN_EMAILS.includes(client.email) ? 'admin' : (client.role || 'user');
 

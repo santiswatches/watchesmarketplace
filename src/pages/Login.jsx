@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Mail, Lock, LogIn, ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
 import { useGoogleLogin } from "@react-oauth/google";
+import { useAuth } from "@/lib/AuthContext";
 
 export default function Login() {
     const [formData, setFormData] = useState({
@@ -17,6 +18,7 @@ export default function Login() {
     });
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
+    const { checkAppState } = useAuth();
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -27,6 +29,7 @@ export default function Login() {
                 email: formData.email,
                 password: formData.password,
             });
+            await checkAppState();
             toast.success("Welcome back to Santi's Watches!");
             navigate(createPageUrl("Home"));
         } catch (error) {
@@ -39,6 +42,7 @@ export default function Login() {
         setIsLoading(true);
         try {
             await base44.auth.loginWithOAuth("google", tokenResponse.access_token);
+            await checkAppState();
             toast.success("Welcome back to Santi's Watches!");
             navigate(createPageUrl("Home"));
         } catch (error) {

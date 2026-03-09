@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { UserPlus, Mail, Lock, User, ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
 import { useGoogleLogin } from "@react-oauth/google";
+import { useAuth } from "@/lib/AuthContext";
 
 export default function Register() {
     const [formData, setFormData] = useState({
@@ -19,6 +20,7 @@ export default function Register() {
     });
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
+    const { checkAppState } = useAuth();
 
     const handleRegister = async (e) => {
         e.preventDefault();
@@ -47,6 +49,7 @@ export default function Register() {
         setIsLoading(true);
         try {
             await base44.auth.loginWithOAuth("google", tokenResponse.access_token);
+            await checkAppState();
             toast.success("Account created successfully!");
             navigate(createPageUrl("Home"));
         } catch (error) {

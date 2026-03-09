@@ -1,0 +1,14 @@
+name = "watch-market"
+compatibility_date = "2024-03-06"
+pages_build_output_dir = "dist"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "watch-market-prod"
+database_id = "f356dfc8-7104-4092-9a96-1e8ee213dbb7"
+preview_database_id = "079accf7-fb5d-4d08-a34f-fc227ee696c6"
+
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "watch-media-prod"
+preview_bucket_name = "watch-media-dev"

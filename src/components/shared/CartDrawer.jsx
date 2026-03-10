@@ -120,7 +120,7 @@ export default function CartDrawer({ isOpen, onClose, cart, setCart }) {
                   <span className="text-foreground text-lg font-light">${total.toLocaleString()}</span>
                 </div>
                 <Link
-                  to={createPageUrl("Checkout")}
+                  to={createPageUrl("checkout")}
                   onClick={onClose}
                   className="block w-full bg-gold text-primary-foreground text-center py-4 text-xs tracking-[0.15em] uppercase font-medium hover:bg-gold-light transition-colors"
                 >

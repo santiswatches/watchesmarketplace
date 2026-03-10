@@ -60,19 +60,19 @@ import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
-    "Admin": Admin,
-    "Checkout": Checkout,
-    "Home": Home,
-    "Login": Login,
-    "MyOrders": MyOrders,
-    "ProductDetail": ProductDetail,
-    "Profile": Profile,
-    "Register": Register,
-    "Shop": Shop,
+    "admin": Admin,
+    "checkout": Checkout,
+    "home": Home,
+    "login": Login,
+    "my-orders": MyOrders,
+    "product-detail": ProductDetail,
+    "profile": Profile,
+    "register": Register,
+    "shop": Shop,
 }
 
 export const pagesConfig = {
-    mainPage: "Home",
+    mainPage: "home",
     Pages: PAGES,
     Layout: __Layout,
 };

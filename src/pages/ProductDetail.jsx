@@ -70,7 +70,7 @@ export default function ProductDetail() {
     return (
       <div className="bg-background min-h-screen pt-24 flex flex-col items-center justify-center text-center">
         <p className="text-muted-foreground text-lg mb-4">Watch not found</p>
-        <Link to={createPageUrl("Shop")} className="text-gold text-sm hover:underline">
+        <Link to={createPageUrl("shop")} className="text-gold text-sm hover:underline">
           Back to Shop
         </Link>
       </div>
@@ -99,7 +99,7 @@ export default function ProductDetail() {
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         {/* Breadcrumb */}
         <Link
-          to={createPageUrl("Shop")}
+          to={createPageUrl("shop")}
           className="inline-flex items-center gap-2 text-white/30 hover:text-white/60 text-xs tracking-wide mb-8 transition-colors"
         >
           <ChevronLeft className="w-4 h-4" /> Back to Collection

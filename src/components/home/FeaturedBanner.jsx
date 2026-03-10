@@ -35,7 +35,7 @@ export default function FeaturedBanner() {
                 with a certificate of authenticity.
               </p>
               <Link
-                to={createPageUrl("Shop") + "?category=limited_edition"}
+                to={createPageUrl("shop") + "?category=limited_edition"}
                 className="mt-8 group inline-flex items-center gap-3 border border-gold text-gold px-8 py-3 text-xs tracking-[0.15em] uppercase font-medium hover:bg-gold hover:text-primary-foreground transition-all duration-300"
               >
                 Explore Collection

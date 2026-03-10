@@ -59,7 +59,7 @@ export default function Home() {
         title="New Arrivals"
         subtitle="Just Landed"
         watches={newArrivals.length > 0 ? newArrivals : watches.slice(0, 4)}
-        categoryLink={createPageUrl("Shop") + "?category=new_arrival"}
+        categoryLink={createPageUrl("shop") + "?category=new_arrival"}
         onAddToCart={addToCart}
       />
 
@@ -70,7 +70,7 @@ export default function Home() {
           title="On Sale"
           subtitle="Limited Time"
           watches={saleWatches}
-          categoryLink={createPageUrl("Shop") + "?category=sale"}
+          categoryLink={createPageUrl("shop") + "?category=sale"}
           onAddToCart={addToCart}
         />
       )}
@@ -80,7 +80,7 @@ export default function Home() {
           title="Bestsellers"
           subtitle="Most Popular"
           watches={bestsellers}
-          categoryLink={createPageUrl("Shop") + "?category=bestseller"}
+          categoryLink={createPageUrl("shop") + "?category=bestseller"}
           onAddToCart={addToCart}
         />
       )}

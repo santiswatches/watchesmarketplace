@@ -38,7 +38,7 @@ export default function Register() {
                 name: formData.name,
             });
             toast.success("Account created successfully!");
-            navigate(createPageUrl("Login"));
+            navigate(createPageUrl("login"));
         } catch (error) {
             toast.error(error.message || "Registration failed. Please try again.");
             setIsLoading(false);
@@ -51,7 +51,7 @@ export default function Register() {
             await base44.auth.loginWithOAuth("google", tokenResponse.access_token);
             await checkAppState();
             toast.success("Account created successfully!");
-            navigate(createPageUrl("Home"));
+            navigate(createPageUrl("home"));
         } catch (error) {
             toast.error(error.message || "Google sign-up failed.");
             setIsLoading(false);
@@ -67,7 +67,7 @@ export default function Register() {
         <div className="bg-background min-h-screen pt-24 pb-20 flex items-center justify-center">
             <div className="max-w-md w-full px-6">
                 <Link
-                    to={createPageUrl("Login")}
+                    to={createPageUrl("login")}
                     className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground text-xs tracking-wide mb-8 transition-colors"
                 >
                     <ChevronLeft className="w-4 h-4" /> Back to Login
@@ -198,7 +198,7 @@ export default function Register() {
 
                     <div className="mt-8 text-center text-sm text-muted-foreground">
                         Already have an account?{" "}
-                        <Link to={createPageUrl("Login")} className="text-gold hover:underline">
+                        <Link to={createPageUrl("login")} className="text-gold hover:underline">
                             Sign In
                         </Link>
                     </div>

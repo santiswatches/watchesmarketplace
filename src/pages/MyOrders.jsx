@@ -22,7 +22,7 @@ export default function MyOrders() {
     queryFn: async () => {
       const isAuthenticated = await base44.auth.isAuthenticated();
       if (!isAuthenticated) {
-        base44.auth.redirectToLogin(createPageUrl("MyOrders"));
+        base44.auth.redirectToLogin(createPageUrl("my-orders"));
         return [];
       }
 
@@ -36,7 +36,7 @@ export default function MyOrders() {
     <div className="bg-background min-h-screen pt-20 md:pt-24 pb-20">
       <div className="max-w-4xl mx-auto px-6 lg:px-12">
         <Link
-          to={createPageUrl("Home")}
+          to={createPageUrl("home")}
           className="inline-flex items-center gap-2 text-white/30 hover:text-white/60 text-xs tracking-wide mb-8 transition-colors"
         >
           <ChevronLeft className="w-4 h-4" /> Back to Home
@@ -56,7 +56,7 @@ export default function MyOrders() {
           <div className="text-center py-20">
             <Package className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
             <p className="text-muted-foreground text-lg font-light mb-2">No orders yet</p>
-            <Link to={createPageUrl("Shop")} className="text-gold text-sm hover:underline">
+            <Link to={createPageUrl("shop")} className="text-gold text-sm hover:underline">
               Start Shopping
             </Link>
           </div>

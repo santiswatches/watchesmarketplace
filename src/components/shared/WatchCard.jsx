@@ -18,7 +18,7 @@ export default function WatchCard({ watch, index = 0, onAddToCart }) {
       transition={{ delay: index * 0.1, duration: 0.5 }}
       className="group relative"
     >
-      <Link to={createPageUrl("ProductDetail") + `?id=${watch.id}`}>
+      <Link to={createPageUrl("product-detail") + `?id=${watch.id}`}>
         <div className="relative aspect-square overflow-hidden bg-card border border-border/50 rounded-sm">
           <img
             src={watch.image_url || "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=600&q=80"}
@@ -75,7 +75,7 @@ export default function WatchCard({ watch, index = 0, onAddToCart }) {
       {/* Info */}
       <div className="mt-4 space-y-1">
         <p className="text-[10px] text-gold tracking-[0.2em] uppercase">{watch.brand}</p>
-        <Link to={createPageUrl("ProductDetail") + `?id=${watch.id}`}>
+        <Link to={createPageUrl("product-detail") + `?id=${watch.id}`}>
           <h3 className="text-foreground text-sm font-light tracking-wide hover:text-gold transition-colors">
             {watch.name}
           </h3>

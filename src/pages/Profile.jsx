@@ -15,7 +15,7 @@ export default function Profile() {
             try {
                 const isAuthenticated = await base44.auth.isAuthenticated();
                 if (!isAuthenticated) {
-                    base44.auth.redirectToLogin(createPageUrl("Profile"));
+                    base44.auth.redirectToLogin(createPageUrl("profile"));
                     return;
                 }
                 const currentUser = await base44.auth.me();
@@ -52,7 +52,7 @@ export default function Profile() {
         <div className="bg-background min-h-screen pt-20 md:pt-24 pb-20">
             <div className="max-w-4xl mx-auto px-6 lg:px-12">
                 <Link
-                    to={createPageUrl("Home")}
+                    to={createPageUrl("home")}
                     className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground text-xs tracking-wide mb-8 transition-colors"
                 >
                     <ChevronLeft className="w-4 h-4" /> Back to Home
@@ -74,10 +74,10 @@ export default function Profile() {
                             </div>
 
                             <nav className="flex flex-col gap-2">
-                                <Link to={createPageUrl("Profile")} className="flex items-center gap-3 px-4 py-3 bg-white/5 text-gold rounded-sm transition-colors text-sm">
+                                <Link to={createPageUrl("profile")} className="flex items-center gap-3 px-4 py-3 bg-white/5 text-gold rounded-sm transition-colors text-sm">
                                     <User className="w-4 h-4" /> Profile Overview
                                 </Link>
-                                <Link to={createPageUrl("MyOrders")} className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:bg-white/5 hover:text-foreground rounded-sm transition-colors text-sm">
+                                <Link to={createPageUrl("my-orders")} className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:bg-white/5 hover:text-foreground rounded-sm transition-colors text-sm">
                                     <Package className="w-4 h-4" /> Order History
                                 </Link>
                                 <button className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:bg-white/5 hover:text-foreground rounded-sm transition-colors text-sm text-left w-full">

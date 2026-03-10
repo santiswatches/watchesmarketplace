@@ -46,14 +46,14 @@ export default function HeroBanner() {
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-4">
               <Link
-                to={createPageUrl("Shop")}
+                to={createPageUrl("shop")}
                 className="group inline-flex items-center gap-3 bg-gold text-primary-foreground px-8 py-4 text-sm tracking-[0.15em] uppercase font-medium hover:bg-gold-light transition-all duration-300"
               >
                 Shop Collection
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link
-                to={createPageUrl("Shop") + "?category=new_arrival"}
+                to={createPageUrl("shop") + "?category=new_arrival"}
                 className="group inline-flex items-center gap-3 border border-border text-foreground px-8 py-4 text-sm tracking-[0.15em] uppercase font-medium hover:border-gold hover:text-gold transition-all duration-300"
               >
                 New Arrivals

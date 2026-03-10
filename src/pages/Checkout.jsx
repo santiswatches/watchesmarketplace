@@ -24,7 +24,7 @@ export default function Checkout() {
     const checkAuth = async () => {
       const isAuthenticated = await base44.auth.isAuthenticated();
       if (!isAuthenticated) {
-        base44.auth.redirectToLogin(createPageUrl("Checkout"));
+        base44.auth.redirectToLogin(createPageUrl("checkout"));
         return;
       }
 
@@ -145,13 +145,13 @@ export default function Checkout() {
           </p>
           <div className="flex flex-col gap-3">
             <Link
-              to={createPageUrl("MyOrders")}
+              to={createPageUrl("my-orders")}
               className="bg-gold text-primary-foreground py-3 text-xs tracking-[0.15em] uppercase font-medium hover:bg-gold-light transition-colors text-center"
             >
               View My Orders
             </Link>
             <Link
-              to={createPageUrl("Home")}
+              to={createPageUrl("home")}
               className="text-muted-foreground text-xs tracking-[0.1em] uppercase hover:text-foreground transition-colors"
             >
               Continue Shopping
@@ -174,7 +174,7 @@ export default function Checkout() {
     return (
       <div className="bg-background min-h-screen pt-24 flex flex-col items-center justify-center">
         <p className="text-muted-foreground text-lg font-light mb-4">Your cart is empty</p>
-        <Link to={createPageUrl("Shop")} className="text-gold text-sm hover:underline">
+        <Link to={createPageUrl("shop")} className="text-gold text-sm hover:underline">
           Browse Collection
         </Link>
       </div>
@@ -185,7 +185,7 @@ export default function Checkout() {
     <div className="bg-background min-h-screen pt-20 md:pt-24 pb-20">
       <div className="max-w-5xl mx-auto px-6 lg:px-12">
         <Link
-          to={createPageUrl("Shop")}
+          to={createPageUrl("shop")}
           className="inline-flex items-center gap-2 text-white/30 hover:text-white/60 text-xs tracking-wide mb-8 transition-colors"
         >
           <ChevronLeft className="w-4 h-4" /> Continue Shopping

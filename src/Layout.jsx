@@ -14,14 +14,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const NAV_LINKS = [
-  { label: "Home", page: "Home" },
-  { label: "Shop", page: "Shop" },
-  { label: "New Arrivals", page: "Shop", params: "?category=new_arrival" },
-  { label: "Sale", page: "Shop", params: "?category=sale" },
+  { label: "Home", page: "home" },
+  { label: "Shop", page: "shop" },
+  { label: "New Arrivals", page: "shop", params: "?category=new_arrival" },
+  { label: "Sale", page: "shop", params: "?category=sale" },
 ];
 
 const ADMIN_LINKS = [
-  { label: "Admin Dashboard", page: "Admin" },
+  { label: "Admin Dashboard", page: "admin" },
 ];
 
 export default function Layout({ children, currentPageName }) {
@@ -67,7 +67,7 @@ export default function Layout({ children, currentPageName }) {
   };
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const isHome = currentPageName === "Home";
+  const isHome = currentPageName === "home";
 
   const adminEmails = ["admin112874@chronoluxe.com", "uberuhanunal@gmail.com", "templateseverlasting@gmail.com", "santis.watches.managment@gmail.com"];
   const isAdmin = user?.role === "admin" || (user?.email && adminEmails.includes(user.email));
@@ -109,7 +109,7 @@ export default function Layout({ children, currentPageName }) {
 
             {/* Logo */}
             <Link
-              to={createPageUrl("Home")}
+              to={createPageUrl("home")}
               className="absolute left-1/2 -translate-x-1/2 text-foreground text-xl md:text-2xl tracking-[0.2em] uppercase font-light"
             >
               Santi's <span className="text-gold">Watches</span>
@@ -119,7 +119,7 @@ export default function Layout({ children, currentPageName }) {
             <div className="flex items-center gap-5">
               {isAdmin && (
                 <Link
-                  to={createPageUrl("Admin")}
+                  to={createPageUrl("admin")}
                   className="hidden md:block text-gold hover:text-gold-light text-xs tracking-[0.15em] uppercase transition-colors duration-300"
                 >
                   Admin
@@ -140,12 +140,12 @@ export default function Layout({ children, currentPageName }) {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="bg-card border-border/50 text-foreground w-48">
                       <DropdownMenuItem asChild className="focus:bg-white/10 cursor-pointer">
-                        <Link to={createPageUrl("Profile")} className="flex items-center gap-2 text-sm px-4 py-2">
+                        <Link to={createPageUrl("profile")} className="flex items-center gap-2 text-sm px-4 py-2">
                           <User className="w-4 h-4" /> Profile Overview
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild className="focus:bg-white/10 cursor-pointer">
-                        <Link to={createPageUrl("MyOrders")} className="flex items-center gap-2 text-sm px-4 py-2">
+                        <Link to={createPageUrl("my-orders")} className="flex items-center gap-2 text-sm px-4 py-2">
                           <ShoppingBag className="w-4 h-4" /> My Orders
                         </Link>
                       </DropdownMenuItem>
@@ -240,13 +240,13 @@ export default function Layout({ children, currentPageName }) {
             <div>
               <h4 className="text-muted-foreground text-xs tracking-[0.2em] uppercase mb-4">Quick Links</h4>
               <div className="space-y-3">
-                {["Home", "Shop"].map((page) => (
+                {[{ label: "Home", page: "home" }, { label: "Shop", page: "shop" }].map(({ label, page }) => (
                   <Link
                     key={page}
                     to={createPageUrl(page)}
                     className="block text-muted-foreground hover:text-gold text-sm transition-colors"
                   >
-                    {page}
+                    {label}
                   </Link>
                 ))}
               </div>

@@ -31,7 +31,7 @@ export default function Login() {
             });
             await checkAppState();
             toast.success("Welcome back to Santi's Watches!");
-            navigate(createPageUrl("Home"));
+            navigate(createPageUrl("home"));
         } catch (error) {
             toast.error(error.message || "Failed to sign in. Please check your credentials.");
             setIsLoading(false);
@@ -44,7 +44,7 @@ export default function Login() {
             await base44.auth.loginWithOAuth("google", tokenResponse.access_token);
             await checkAppState();
             toast.success("Welcome back to Santi's Watches!");
-            navigate(createPageUrl("Home"));
+            navigate(createPageUrl("home"));
         } catch (error) {
             toast.error(error.message || "Google sign-in failed.");
             setIsLoading(false);
@@ -60,7 +60,7 @@ export default function Login() {
         <div className="bg-background min-h-screen pt-24 pb-20 flex items-center justify-center">
             <div className="max-w-md w-full px-6">
                 <Link
-                    to={createPageUrl("Home")}
+                    to={createPageUrl("home")}
                     className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground text-xs tracking-wide mb-8 transition-colors"
                 >
                     <ChevronLeft className="w-4 h-4" /> Back to Home
@@ -168,7 +168,7 @@ export default function Login() {
 
                     <div className="mt-8 text-center text-sm text-muted-foreground">
                         Don't have an account?{" "}
-                        <Link to={createPageUrl("Register")} className="text-gold hover:underline">
+                        <Link to={createPageUrl("register")} className="text-gold hover:underline">
                             Create an account
                         </Link>
                     </div>

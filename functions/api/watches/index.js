@@ -11,12 +11,13 @@ export async function onRequestPost(context) {
         let body;
         try { body = await request.json(); } catch { return safeError(400, 'Invalid JSON'); }
 
-        const { name, brand, price, images, videos, description, specs, tags, material, category, currency, stock } = body;
+        const { name, brand, price, original_price, images, videos, description, specs, tags, material, category, currency, stock } = body;
 
         // Required field validation
         if (!name || typeof name !== 'string' || name.trim().length === 0) return safeError(400, 'name is required');
         if (!brand || typeof brand !== 'string' || brand.trim().length === 0) return safeError(400, 'brand is required');
         if (price == null || typeof price !== 'number' || price < 0 || !isFinite(price)) return safeError(400, 'price must be a non-negative number');
+        if (original_price != null && (typeof original_price !== 'number' || original_price < 0 || !isFinite(original_price))) return safeError(400, 'original_price must be a non-negative number');
         if (name.length > 200) return safeError(400, 'name too long');
         if (brand.length > 100) return safeError(400, 'brand too long');
         if (description && description.length > 5000) return safeError(400, 'description too long');
@@ -24,10 +25,11 @@ export async function onRequestPost(context) {
         const id = crypto.randomUUID();
 
         await env.DB.prepare(
-            'INSERT INTO products (id, name, brand, price, images, videos, description, specs, tags, material, category, currency, stock) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13)'
+            'INSERT INTO products (id, name, brand, price, original_price, images, videos, description, specs, tags, material, category, currency, stock) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14)'
         ).bind(
             id,
             name.trim(), brand.trim(), price,
+            original_price != null ? original_price : null,
             JSON.stringify(Array.isArray(images) ? images : []),
             JSON.stringify(Array.isArray(videos) ? videos : []),
             description?.trim() || null,
@@ -71,7 +73,7 @@ export async function onRequestGet(context) {
         };
         const orderClause = SORT_MAP[sort_by] ?? 'ORDER BY created_date DESC';
 
-        let query = 'SELECT id, name, brand, price, images, videos, description, specs, tags, material, category, created_date FROM products WHERE 1=1';
+        let query = 'SELECT id, name, brand, price, original_price, images, videos, description, specs, tags, material, category, created_date FROM products WHERE 1=1';
         const params = [];
 
         if (brand && brand !== 'All')    { query += ' AND brand = ?';    params.push(brand.slice(0, 100)); }

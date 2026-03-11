@@ -5,7 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "../utils";
 import { motion } from "framer-motion";
-import { ShoppingBag, Heart, ChevronLeft, Shield, Truck, RotateCcw, Minus, Plus, Play } from "lucide-react";
+import { ShoppingBag, Heart, ChevronLeft, Shield, Truck, RotateCcw, Minus, Plus, Play, Star } from "lucide-react";
+import { fetchProductReviews } from "@/services/reviews";
 import { Label } from "@/components/ui/label";
 import WatchCard from "../components/shared/WatchCard";
 import VideoPlayer from "../components/shared/VideoPlayer";
@@ -32,6 +33,12 @@ export default function ProductDetail() {
     queryKey: ["watches-related"],
     queryFn: () => base44.entities.Watch.list(),
     enabled: !!watch,
+  });
+
+  const { data: productReviews = [] } = useQuery({
+    queryKey: ["product-reviews", watchId],
+    queryFn: () => fetchProductReviews(watchId),
+    enabled: !!watchId,
   });
 
   const addToCart = async () => {
@@ -332,6 +339,54 @@ export default function ProductDetail() {
           </motion.div>
         </div>
       </div>
+
+      {/* Customer Reviews */}
+      {productReviews.length > 0 && (
+        <div className="bg-white border-t border-warm-border py-16">
+          <div className="max-w-7xl mx-auto px-6 lg:px-12">
+            <p className="text-accent-orange text-[10px] tracking-[0.35em] uppercase font-semibold mb-2">
+              Customer Reviews
+            </p>
+            <h2 className="text-2xl md:text-3xl font-extralight text-warm-black tracking-tight mb-10">
+              What Our Clients Say
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {productReviews.map((review) => (
+                <div
+                  key={review.id}
+                  className="bg-offwhite border border-warm-border rounded-xl p-6"
+                >
+                  <div className="flex items-center gap-0.5 mb-3">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`w-3.5 h-3.5 ${
+                          i < review.rating
+                            ? "fill-amber-gold text-amber-gold"
+                            : "fill-none text-warm-border"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <p className="text-sm text-warm-black font-light leading-relaxed mb-4">
+                    "{review.testimonial}"
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs font-semibold text-warm-black">
+                      {review.customer_name || "Verified Buyer"}
+                    </p>
+                    {review.purchase_date && (
+                      <p className="text-[10px] text-muted-warm">
+                        Purchased {review.purchase_date}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Related watches */}
       {displayRelated.length > 0 && (

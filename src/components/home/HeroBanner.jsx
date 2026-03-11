@@ -1,6 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Star } from "lucide-react";
+import { Star, StarHalf } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { fetchReviewStats } from "@/services/reviews";
 
 const WATCHES = [
   {
@@ -37,7 +39,36 @@ const WATCHES = [
 
 const SHADOW = { filter: "drop-shadow(0 20px 40px rgba(0,0,0,0.10))" };
 
+function DynamicStars({ average }) {
+  const full = Math.floor(average);
+  const hasHalf = average - full >= 0.3;
+  const empty = 5 - full - (hasHalf ? 1 : 0);
+
+  return (
+    <div className="flex items-center gap-0.5">
+      {[...Array(full)].map((_, i) => (
+        <Star key={`f${i}`} className="w-4 h-4 fill-amber-gold text-amber-gold" />
+      ))}
+      {hasHalf && (
+        <StarHalf className="w-4 h-4 fill-amber-gold text-amber-gold" />
+      )}
+      {[...Array(empty)].map((_, i) => (
+        <Star key={`e${i}`} className="w-4 h-4 fill-none text-amber-gold/30" />
+      ))}
+    </div>
+  );
+}
+
 export default function HeroBanner() {
+  const { data: stats } = useQuery({
+    queryKey: ["review-stats"],
+    queryFn: fetchReviewStats,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const average = stats?.average || 5;
+  const count = stats?.count || 0;
+
   return (
     <section className="relative bg-cream overflow-hidden" style={{ minHeight: "100vh" }}>
 
@@ -85,17 +116,17 @@ export default function HeroBanner() {
             Discover the perfect timepiece for you
           </h1>
 
-          <p className="mt-5 text-[13px] font-light tracking-wide text-muted-warm leading-relaxed uppercase" style={{ maxWidth: "260px" }}>
+          <p className="mt-5 text-sm font-light tracking-wide text-muted-warm leading-relaxed" style={{ maxWidth: "300px" }}>
             Brand new and certified pre-owned exclusive watches, sourced from reputable dealers.
           </p>
 
           <div className="mt-6 flex flex-col items-center gap-1.5">
-            <div className="flex items-center gap-0.5">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-4 h-4 fill-amber-gold text-amber-gold" />
-              ))}
-            </div>
-            <p className="text-xs text-muted-warm">(72)</p>
+            <DynamicStars average={average} />
+            {count > 0 && (
+              <p className="text-xs text-muted-warm">
+                {average.toFixed(1)} from {count} review{count !== 1 ? "s" : ""}
+              </p>
+            )}
           </div>
         </motion.div>
       </div>
@@ -114,16 +145,16 @@ export default function HeroBanner() {
           <h1 className="text-4xl font-extrabold uppercase text-warm-black leading-[0.9] tracking-tight">
             Discover the perfect timepiece for you
           </h1>
-          <p className="mt-5 text-[13px] font-light text-muted-warm max-w-[240px] mx-auto leading-relaxed uppercase">
+          <p className="mt-5 text-sm font-light text-muted-warm max-w-[280px] mx-auto leading-relaxed">
             Brand new and certified pre-owned exclusive watches, sourced from reputable dealers.
           </p>
           <div className="mt-5 flex flex-col items-center gap-1">
-            <div className="flex items-center gap-0.5">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-4 h-4 fill-amber-gold text-amber-gold" />
-              ))}
-            </div>
-            <p className="text-xs text-muted-warm">(72)</p>
+            <DynamicStars average={average} />
+            {count > 0 && (
+              <p className="text-xs text-muted-warm">
+                {average.toFixed(1)} from {count} review{count !== 1 ? "s" : ""}
+              </p>
+            )}
           </div>
         </motion.div>
 

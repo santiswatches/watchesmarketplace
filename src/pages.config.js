@@ -55,6 +55,7 @@ import MyOrders from './pages/MyOrders';
 import ProductDetail from './pages/ProductDetail';
 import Profile from './pages/Profile';
 import Register from './pages/Register';
+import Review from './pages/Review';
 import Shop from './pages/Shop';
 import __Layout from './Layout.jsx';
 
@@ -68,6 +69,7 @@ export const PAGES = {
     "product-detail": ProductDetail,
     "profile": Profile,
     "register": Register,
+    "review": Review,
     "shop": Shop,
 }
 

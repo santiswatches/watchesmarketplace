@@ -23,7 +23,13 @@ const ADMIN_LINKS = [
   { label: "Admin Dashboard", page: "admin" },
 ];
 
+const STANDALONE_PAGES = ["review"];
+
 export default function Layout({ children, currentPageName }) {
+  // Standalone pages render without navbar/footer
+  if (STANDALONE_PAGES.includes(currentPageName)) {
+    return <>{children}</>;
+  }
   const [cart, setCart] = useState(() => {
     const saved = localStorage.getItem("watch_cart");
     return saved ? JSON.parse(saved) : [];

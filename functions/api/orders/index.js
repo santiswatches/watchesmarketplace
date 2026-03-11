@@ -11,7 +11,7 @@ export async function onRequestGet({ request, env }) {
         const reviewSentFilter = url.searchParams.get('review_sent');
 
         let query = `
-            SELECT o.id, o.client_id, o.total, o.status, o.created_date, o.review_sent,
+            SELECT o.id, o.client_id, o.total, o.status, o.created_date, o.review_sent, o.return_guarantee,
                    c.name as customer_name, c.email as customer_email
             FROM orders o
             LEFT JOIN clients c ON o.client_id = c.id
@@ -92,7 +92,7 @@ export async function onRequestPost({ request, env }) {
         let data;
         try { data = await request.json(); } catch { return safeError(400, 'Invalid JSON'); }
 
-        const { customer_name, items, total_amount } = data;
+        const { customer_name, items, total_amount, return_guarantee } = data;
 
         // ── Input validation ──────────────────────────────────────────────────
         if (!Array.isArray(items) || items.length === 0) return safeError(400, 'items must be a non-empty array');
@@ -120,8 +120,8 @@ export async function onRequestPost({ request, env }) {
         const queries  = [];
 
         queries.push(
-            env.DB.prepare('INSERT INTO orders (id, client_id, total, status) VALUES (?1, ?2, ?3, ?4)')
-                  .bind(orderId, clientId, total_amount, 'pending') // status always 'pending' on creation
+            env.DB.prepare('INSERT INTO orders (id, client_id, total, status, return_guarantee) VALUES (?1, ?2, ?3, ?4, ?5)')
+                  .bind(orderId, clientId, total_amount, 'pending', return_guarantee ? 1 : 0) // status always 'pending' on creation
         );
 
         for (const item of items) {

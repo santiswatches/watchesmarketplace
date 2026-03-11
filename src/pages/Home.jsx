@@ -1,6 +1,6 @@
 import React from "react";
 import { createPageUrl } from "../utils";
-import { base44 } from "@/services/api";
+import { api } from "@/services/api";
 import { useQuery } from "@tanstack/react-query";
 
 import HeroBanner from "../components/home/HeroBanner";
@@ -12,7 +12,7 @@ import Newsletter from "../components/home/Newsletter";
 export default function Home() {
   const { data: watches = [], isLoading } = useQuery({
     queryKey: ["watches"],
-    queryFn: () => base44.entities.Watch.list({ sort_by: "newest" }),
+    queryFn: () => api.watches.list({ sort_by: "newest" }),
   });
 
   const newArrivals = watches.filter((w) => w.category === "new_arrival").slice(0, 4);
@@ -20,9 +20,9 @@ export default function Home() {
   const bestsellers = watches.filter((w) => w.category === "bestseller").slice(0, 4);
 
   const addToCart = async (watch) => {
-    const isAuthenticated = await base44.auth.isAuthenticated();
+    const isAuthenticated = await api.auth.isAuthenticated();
     if (!isAuthenticated) {
-      base44.auth.redirectToLogin(window.location.pathname);
+      api.auth.redirectToLogin(window.location.pathname);
       return;
     }
 

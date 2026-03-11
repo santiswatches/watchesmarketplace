@@ -1,73 +1,104 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Star, StarHalf } from "lucide-react";
+import { Heart, ArrowRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchReviewStats } from "@/services/reviews";
+import { api } from "@/services/api";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
 
 const WATCHES = [
   {
     src: "/assets/watches/ap_black_dial-removebg-preview.png",
     alt: "Audemars Piguet",
+    brand: "Audemars Piguet",
     style: { top: "-2%", left: "10%", width: "clamp(190px, 17vw, 250px)", transform: "rotate(-6deg)" },
+    heartPos: { bottom: "5%", left: "5%" },
     delay: 0.07,
   },
   {
     src: "/assets/watches/green_dial_datejust_rolex-removebg-preview.png",
     alt: "Rolex Datejust",
+    brand: "Rolex",
+    nameHint: "Datejust",
     style: { top: "-30%", left: "53%", width: "clamp(195px, 17vw, 255px)", transform: "rotate(4deg)" },
+    heartPos: { bottom: "5%", right: "5%" },
     delay: 0.15,
   },
   {
     src: "/assets/watches/cartier_santos_white_dial-removebg-preview.png",
     alt: "Cartier Santos",
+    brand: "Cartier",
     style: { top: "48%", left: "14%", width: "clamp(185px, 17vw, 245px)", transform: "rotate(2deg)" },
+    heartPos: { bottom: "5%", right: "5%" },
     delay: 0.11,
   },
   {
     src: "/assets/watches/patek_nautilus-removebg-preview.png",
     alt: "Patek Nautilus",
+    brand: "Patek Philippe",
     style: { top: "5%", right: "5%", width: "clamp(190px, 17vw, 250px)", transform: "rotate(-3deg)" },
+    heartPos: { bottom: "5%", left: "5%" },
     delay: 0.2,
   },
   {
     src: "/assets/watches/panda_daytona-removebg-preview.png",
     alt: "Rolex Panda Daytona",
+    brand: "Rolex",
+    nameHint: "Daytona",
     style: { bottom: "-5%", right: "16%", width: "clamp(190px, 17vw, 250px)", transform: "rotate(-2deg)" },
+    heartPos: { top: "5%", right: "5%" },
     delay: 0.25,
   },
 ];
 
 const SHADOW = { filter: "drop-shadow(0 20px 40px rgba(0,0,0,0.10))" };
 
-function DynamicStars({ average }) {
-  const full = Math.floor(average);
-  const hasHalf = average - full >= 0.3;
-  const empty = 5 - full - (hasHalf ? 1 : 0);
+function HeroWatchHeart({ watch, products }) {
+  const [isFav, setIsFav] = useState(false);
+
+  // Find matching product by brand (and optional name hint)
+  const product = products.find(p => {
+    if (p.brand !== watch.brand) return false;
+    if (watch.nameHint) return p.name.toLowerCase().includes(watch.nameHint.toLowerCase());
+    return true;
+  });
+
+  useEffect(() => {
+    if (product) setIsFav(window.__isFavorite?.(product.id) || false);
+  });
+
+  if (!product) return null;
+
+  const handleClick = (e) => {
+    e.stopPropagation();
+    const images = product.images ? (typeof product.images === 'string' ? JSON.parse(product.images) : product.images) : [];
+    window.__toggleFavorite?.(product.id, {
+      name: product.name,
+      brand: product.brand,
+      price: product.price,
+      original_price: product.original_price,
+      image_url: images[0] || watch.src,
+      category: product.category,
+    });
+  };
 
   return (
-    <div className="flex items-center gap-0.5">
-      {[...Array(full)].map((_, i) => (
-        <Star key={`f${i}`} className="w-4 h-4 fill-amber-gold text-amber-gold" />
-      ))}
-      {hasHalf && (
-        <StarHalf className="w-4 h-4 fill-amber-gold text-amber-gold" />
-      )}
-      {[...Array(empty)].map((_, i) => (
-        <Star key={`e${i}`} className="w-4 h-4 fill-none text-amber-gold/30" />
-      ))}
-    </div>
+    <button
+      onClick={handleClick}
+      className="absolute z-20 w-8 h-8 bg-white/90 backdrop-blur-sm border border-warm-border rounded-full flex items-center justify-center hover:bg-white hover:scale-110 transition-all duration-200 shadow-sm"
+      style={watch.heartPos}
+    >
+      <Heart className={`w-3.5 h-3.5 ${isFav ? "fill-accent-orange text-accent-orange" : "text-muted-warm"}`} />
+    </button>
   );
 }
 
 export default function HeroBanner() {
-  const { data: stats } = useQuery({
-    queryKey: ["review-stats"],
-    queryFn: fetchReviewStats,
+  const { data: products = [] } = useQuery({
+    queryKey: ["watches-all"],
+    queryFn: () => api.watches.list(),
     staleTime: 5 * 60 * 1000,
   });
-
-  const average = stats?.average || 5;
-  const count = stats?.count || 0;
 
   return (
     <section className="relative bg-cream overflow-hidden" style={{ minHeight: "100vh" }}>
@@ -80,16 +111,24 @@ export default function HeroBanner() {
         style={{ top: "4rem" }}
       >
         {WATCHES.map((w, i) => (
-          <motion.img
+          <motion.div
             key={i}
-            src={w.src}
-            alt={w.alt}
             initial={{ opacity: 0, scale: 0.88 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: w.delay, duration: 0.75, ease: "easeOut" }}
-            className="absolute object-contain select-none pointer-events-none"
-            style={{ ...w.style, ...SHADOW }}
-          />
+            className="absolute group/hero"
+            style={w.style}
+          >
+            <img
+              src={w.src}
+              alt={w.alt}
+              className="w-full object-contain select-none"
+              style={SHADOW}
+            />
+            <div className="opacity-0 group-hover/hero:opacity-100 transition-opacity duration-200">
+              <HeroWatchHeart watch={w} products={products} />
+            </div>
+          </motion.div>
         ))}
       </div>
 
@@ -116,18 +155,17 @@ export default function HeroBanner() {
             Discover the perfect timepiece for you
           </h1>
 
-          <p className="mt-5 text-sm font-light tracking-wide text-muted-warm leading-relaxed" style={{ maxWidth: "300px" }}>
-            Brand new and certified pre-owned exclusive watches, sourced from reputable dealers.
+          <p className="mt-5 text-sm font-light tracking-wide text-muted-warm leading-relaxed" style={{ maxWidth: "420px" }}>
+            Experience premium replica timepieces crafted with remarkable attention to detail and up to 90% accuracy. Standing out from other replica brands with almost 1:1 exterior detailing, mirroring even the smallest details.
           </p>
 
-          <div className="mt-6 flex flex-col items-center gap-1.5">
-            <DynamicStars average={average} />
-            {count > 0 && (
-              <p className="text-xs text-muted-warm">
-                {average.toFixed(1)} from {count} review{count !== 1 ? "s" : ""}
-              </p>
-            )}
-          </div>
+          <Link
+            to={createPageUrl("reviews")}
+            className="mt-6 inline-flex items-center gap-2 bg-warm-black text-white px-6 py-3 rounded-lg text-xs tracking-[0.15em] uppercase font-medium hover:bg-warm-black/90 transition-colors"
+          >
+            Read Our Reviews
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
         </motion.div>
       </div>
 
@@ -148,14 +186,13 @@ export default function HeroBanner() {
           <p className="mt-5 text-sm font-light text-muted-warm max-w-[280px] mx-auto leading-relaxed">
             Brand new and certified pre-owned exclusive watches, sourced from reputable dealers.
           </p>
-          <div className="mt-5 flex flex-col items-center gap-1">
-            <DynamicStars average={average} />
-            {count > 0 && (
-              <p className="text-xs text-muted-warm">
-                {average.toFixed(1)} from {count} review{count !== 1 ? "s" : ""}
-              </p>
-            )}
-          </div>
+          <Link
+            to={createPageUrl("reviews")}
+            className="mt-5 inline-flex items-center gap-2 bg-warm-black text-white px-6 py-3 rounded-lg text-xs tracking-[0.15em] uppercase font-medium hover:bg-warm-black/90 transition-colors"
+          >
+            Read Our Reviews
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
         </motion.div>
 
         <motion.img

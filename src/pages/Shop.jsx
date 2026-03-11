@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { createPageUrl } from "../utils";
-import { base44 } from "@/services/api";
+import { api } from "@/services/api";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { SlidersHorizontal, X, Search } from "lucide-react";
@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const BRANDS = ["All", "Rolex", "Omega", "Tag Heuer", "Cartier", "Breitling", "Patek Philippe"];
+const BRANDS = ["All", "Rolex", "Omega", "Patek Philippe", "Audemars Piguet", "Cartier"];
 const CATEGORIES = [
   { value: "all", label: "All" },
   { value: "new_arrival", label: "New Arrivals" },
@@ -55,7 +55,7 @@ export default function Shop() {
 
   const { data: watches = [], isLoading } = useQuery({
     queryKey: ["watches-shop"],
-    queryFn: () => base44.entities.Watch.list(),
+    queryFn: () => api.watches.list(),
   });
 
   const filteredWatches = useMemo(() => {
@@ -91,9 +91,9 @@ export default function Shop() {
   }, [watches, brand, category, material, sort, searchQuery]);
 
   const addToCart = async (watch) => {
-    const isAuthenticated = await base44.auth.isAuthenticated();
+    const isAuthenticated = await api.auth.isAuthenticated();
     if (!isAuthenticated) {
-      base44.auth.redirectToLogin(window.location.pathname);
+      api.auth.redirectToLogin(window.location.pathname);
       return;
     }
 

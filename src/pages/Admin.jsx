@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/services/api";
+import { api } from "@/services/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Plus, Pencil, Trash2, Upload, X, Film, MessageSquare, ShoppingBag } from "lucide-react";
@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 
-const BRANDS = ["Rolex", "Audemars Piguet", "Patek Philippe", "Omega", "Tag Heuer", "Cartier", "Breitling"];
+const BRANDS = ["Rolex", "Omega", "Patek Philippe", "Audemars Piguet", "Cartier"];
 const CATEGORIES = ["new_arrival", "sale", "bestseller", "limited_edition", "all"];
 const MOVEMENTS = ["Automatic", "Quartz", "Manual"];
 
@@ -114,9 +114,9 @@ export default function Admin() {
   useEffect(() => {
     const checkAdmin = async () => {
       try {
-        const currentUser = await base44.auth.me();
+        const currentUser = await api.auth.me();
         if (!currentUser) {
-          base44.auth.redirectToLogin("/admin");
+          api.auth.redirectToLogin("/admin");
           return;
         }
         const isAuthorized = currentUser.role === "admin" || ADMIN_EMAILS.includes(currentUser.email);
@@ -126,7 +126,7 @@ export default function Admin() {
         }
         setUser(currentUser);
       } catch (error) {
-        base44.auth.redirectToLogin("/admin");
+        api.auth.redirectToLogin("/admin");
       } finally {
         setIsLoading(false);
       }
@@ -136,12 +136,12 @@ export default function Admin() {
 
   const { data: watches = [] } = useQuery({
     queryKey: ["admin-watches"],
-    queryFn: () => base44.entities.Watch.list(),
+    queryFn: () => api.watches.list(),
     enabled: !!user,
   });
 
   const createMutation = useMutation({
-    mutationFn: (data) => base44.entities.Watch.create(data),
+    mutationFn: (data) => api.watches.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-watches"] });
       toast.success("Watch created successfully");
@@ -151,7 +151,7 @@ export default function Admin() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.Watch.update(id, data),
+    mutationFn: ({ id, data }) => api.watches.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-watches"] });
       toast.success("Watch updated successfully");
@@ -161,7 +161,7 @@ export default function Admin() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.Watch.delete(id),
+    mutationFn: (id) => api.watches.remove(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-watches"] });
       toast.success("Watch deleted");
@@ -174,7 +174,7 @@ export default function Admin() {
     if (!file) return;
     setUploadingImage(true);
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      const { file_url } = await api.upload.file({ file });
       setFormData((f) => ({ ...f, image_url: file_url }));
       toast.success("Image uploaded");
     } catch {
@@ -189,7 +189,7 @@ export default function Admin() {
     if (!files.length) return;
     setUploadingImage(true);
     try {
-      const results = await Promise.all(files.map((f) => base44.integrations.Core.UploadFile({ file: f })));
+      const results = await Promise.all(files.map((f) => api.upload.file({ file: f })));
       const newUrls = results.map((r) => r.file_url);
       setFormData((f) => ({ ...f, gallery_urls: [...f.gallery_urls, ...newUrls] }));
       toast.success(`${files.length} image(s) uploaded`);
@@ -215,7 +215,7 @@ export default function Admin() {
     setVideoUploadProgress(0);
     try {
       for (let i = 0; i < files.length; i++) {
-        const { file_url } = await base44.integrations.Core.UploadFileWithProgress({
+        const { file_url } = await api.upload.fileWithProgress({
           file: files[i],
           onProgress: (pct) => setVideoUploadProgress(Math.round((i / files.length) * 100 + pct / files.length)),
         });

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { base44 } from "@/services/api";
+import { api } from "@/services/api";
 import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "../utils";
 import { motion } from "framer-motion";
@@ -25,7 +25,7 @@ export default function Login() {
         setIsLoading(true);
 
         try {
-            await base44.auth.login({
+            await api.auth.login({
                 email: formData.email,
                 password: formData.password,
             });
@@ -41,7 +41,7 @@ export default function Login() {
     const handleGoogleLoginSuccess = async (tokenResponse) => {
         setIsLoading(true);
         try {
-            await base44.auth.loginWithOAuth("google", tokenResponse.access_token);
+            await api.auth.loginWithOAuth("google", tokenResponse.access_token);
             await checkAppState();
             toast.success("Welcome back to Santi's Watches!");
             navigate(createPageUrl("home"));

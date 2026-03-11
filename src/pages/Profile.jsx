@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/services/api";
+import { api } from "@/services/api";
 import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "../utils";
 import { ChevronLeft, User, Package, Settings, LogOut } from "lucide-react";
@@ -12,12 +12,12 @@ export default function Profile() {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const isAuthenticated = await base44.auth.isAuthenticated();
+                const isAuthenticated = await api.auth.isAuthenticated();
                 if (!isAuthenticated) {
-                    base44.auth.redirectToLogin(createPageUrl("profile"));
+                    api.auth.redirectToLogin(createPageUrl("profile"));
                     return;
                 }
-                const currentUser = await base44.auth.me();
+                const currentUser = await api.auth.me();
                 setUser(currentUser);
             } catch (error) {
                 console.error("Failed to load user:", error);
@@ -30,7 +30,7 @@ export default function Profile() {
 
     const handleLogout = async () => {
         try {
-            await base44.auth.logout();
+            await api.auth.logout();
             window.location.href = "/";
         } catch (error) {
             console.error("Logout failed", error);

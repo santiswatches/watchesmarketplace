@@ -1,5 +1,5 @@
 import React from "react";
-import { base44 } from "@/services/api";
+import { api } from "@/services/api";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "../utils";
@@ -20,14 +20,14 @@ export default function MyOrders() {
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ["my-orders"],
     queryFn: async () => {
-      const isAuthenticated = await base44.auth.isAuthenticated();
+      const isAuthenticated = await api.auth.isAuthenticated();
       if (!isAuthenticated) {
-        base44.auth.redirectToLogin(createPageUrl("my-orders"));
+        api.auth.redirectToLogin(createPageUrl("my-orders"));
         return [];
       }
 
-      const user = await base44.auth.me();
-      const allOrders = await base44.entities.Order.list("-created_date", 100);
+      const user = await api.auth.me();
+      const allOrders = await api.orders.list();
       return allOrders.filter(order => order.customer_email === user.email);
     },
   });

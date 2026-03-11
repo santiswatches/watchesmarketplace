@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/services/api";
+import { api } from "@/services/api";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "../utils";
 import { motion } from "framer-motion";
@@ -23,14 +23,14 @@ export default function Checkout() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const isAuthenticated = await base44.auth.isAuthenticated();
+      const isAuthenticated = await api.auth.isAuthenticated();
       if (!isAuthenticated) {
-        base44.auth.redirectToLogin(createPageUrl("checkout"));
+        api.auth.redirectToLogin(createPageUrl("checkout"));
         return;
       }
 
       try {
-        const user = await base44.auth.me();
+        const user = await api.auth.me();
         setFormData(prev => ({
           ...prev,
           name: user.full_name || prev.name,
@@ -99,7 +99,7 @@ export default function Checkout() {
           const details = await actions.order.capture();
 
           // Create order in database
-          await base44.entities.Order.create({
+          await api.orders.create({
             customer_email: formData.email || details.payer?.email_address || "",
             customer_name: formData.name || details.payer?.name?.given_name || "",
             items: cart.map((item) => ({

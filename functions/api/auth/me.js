@@ -15,8 +15,11 @@ export async function onRequestGet({ request, env }) {
             return Response.json({ user: null });
         }
 
-        // Verify JWT
-        const isValid = await jwt.verify(token, env.JWT_SECRET || 'secret123');
+        // Verify JWT — fail closed if secret is not configured
+        if (!env.JWT_SECRET) {
+            return Response.json({ user: null });
+        }
+        const isValid = await jwt.verify(token, env.JWT_SECRET);
         if (!isValid) {
             return Response.json({ user: null });
         }

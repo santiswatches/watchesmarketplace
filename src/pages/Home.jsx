@@ -1,26 +1,23 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
 import { createPageUrl } from "../utils";
 import { base44 } from "@/services/api";
 import { useQuery } from "@tanstack/react-query";
 
 import HeroBanner from "../components/home/HeroBanner";
 import WatchSection from "../components/home/WatchSection";
-import FeaturedBanner from "../components/home/FeaturedBanner";
+import FeaturedBrands from "../components/home/FeaturedBrands";
+import CategoryGrid from "../components/home/CategoryGrid";
 import Newsletter from "../components/home/Newsletter";
 
 export default function Home() {
-  const navigate = useNavigate();
-
   const { data: watches = [], isLoading } = useQuery({
     queryKey: ["watches"],
-    queryFn: () => base44.entities.Watch.list("-created_date", 50),
+    queryFn: () => base44.entities.Watch.list({ sort_by: "newest" }),
   });
 
   const newArrivals = watches.filter((w) => w.category === "new_arrival").slice(0, 4);
   const saleWatches = watches.filter((w) => w.category === "sale").slice(0, 4);
   const bestsellers = watches.filter((w) => w.category === "bestseller").slice(0, 4);
-  const featured = watches.filter((w) => w.featured).slice(0, 4);
 
   const addToCart = async (watch) => {
     const isAuthenticated = await base44.auth.isAuthenticated();
@@ -55,15 +52,18 @@ export default function Home() {
     <div>
       <HeroBanner />
 
+      <FeaturedBrands watches={watches} />
+
       <WatchSection
         title="New Arrivals"
         subtitle="Just Landed"
         watches={newArrivals.length > 0 ? newArrivals : watches.slice(0, 4)}
         categoryLink={createPageUrl("shop") + "?category=new_arrival"}
         onAddToCart={addToCart}
+        altBg
       />
 
-      <FeaturedBanner />
+      <CategoryGrid />
 
       {saleWatches.length > 0 && (
         <WatchSection
@@ -72,6 +72,7 @@ export default function Home() {
           watches={saleWatches}
           categoryLink={createPageUrl("shop") + "?category=sale"}
           onAddToCart={addToCart}
+          altBg
         />
       )}
 

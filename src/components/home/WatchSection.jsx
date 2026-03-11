@@ -5,11 +5,11 @@ import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import WatchCard from "../shared/WatchCard";
 
-export default function WatchSection({ title, subtitle, watches, categoryLink, onAddToCart }) {
+export default function WatchSection({ title, subtitle, watches, categoryLink, onAddToCart, altBg = false }) {
   if (!watches || watches.length === 0) return null;
 
   return (
-    <section className="bg-background py-20 md:py-28">
+    <section className={`${altBg ? "bg-offwhite" : "bg-white"} py-20 md:py-28`}>
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         {/* Header */}
         <div className="flex items-end justify-between mb-12">
@@ -19,9 +19,9 @@ export default function WatchSection({ title, subtitle, watches, categoryLink, o
             viewport={{ once: true }}
           >
             {subtitle && (
-              <p className="text-gold tracking-[0.3em] uppercase text-xs mb-3">{subtitle}</p>
+              <p className="font-sans text-[11px] font-semibold tracking-widest uppercase text-accent-orange mb-3">{subtitle}</p>
             )}
-            <h2 className="text-2xl md:text-4xl text-foreground font-light tracking-tight">{title}</h2>
+            <h2 className="font-condensed text-3xl md:text-5xl font-bold uppercase tracking-tight text-warm-black">{title}</h2>
           </motion.div>
           {categoryLink && (
             <motion.div
@@ -31,7 +31,7 @@ export default function WatchSection({ title, subtitle, watches, categoryLink, o
             >
               <Link
                 to={categoryLink}
-                className="group hidden md:flex items-center gap-2 text-muted-foreground hover:text-gold text-sm tracking-wide transition-colors"
+                className="group hidden md:flex items-center gap-2 text-muted-warm hover:text-accent-orange text-xs font-semibold tracking-widest uppercase transition-colors"
               >
                 View All
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -52,7 +52,7 @@ export default function WatchSection({ title, subtitle, watches, categoryLink, o
           <div className="mt-10 text-center md:hidden">
             <Link
               to={categoryLink}
-              className="inline-flex items-center gap-2 text-gold hover:text-gold-light transition-colors text-sm tracking-wide"
+              className="inline-flex items-center gap-2 text-accent-orange text-xs font-semibold tracking-widest uppercase transition-colors"
             >
               View All <ArrowRight className="w-4 h-4" />
             </Link>

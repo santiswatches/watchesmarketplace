@@ -4,25 +4,25 @@ import { createPageUrl } from "../../utils";
 
 const CATEGORIES = [
   {
-    name: "Motorsport",
+    name: "Chronograph",
     description: "Lightweight and built for performance.",
     image: "/assets/watches/panda_daytona-removebg-preview.png",
     param: "?brand=Rolex",
   },
   {
-    name: "Divers",
+    name: "GMT",
     description: "Heavy water resistance and unique features.",
     image: "/assets/watches/ap_black_dial-removebg-preview.png",
     param: "?brand=Audemars+Piguet",
   },
   {
-    name: "Pilots",
+    name: "Diver",
     description: "For those who belong in the skies.",
     image: "/assets/watches/green_dial_datejust_rolex-removebg-preview.png",
     param: "?brand=Rolex",
   },
   {
-    name: "Executives",
+    name: "Everyday Use",
     description: "Slim and elegant, perfect with a suit.",
     image: "/assets/watches/cartier_santos_white_dial-removebg-preview.png",
     param: "?brand=Cartier",

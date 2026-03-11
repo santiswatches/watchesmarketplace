@@ -3,10 +3,9 @@ import React from "react";
 const brands = [
   { name: "Rolex", letter: "R" },
   { name: "Omega", letter: "Ω" },
-  { name: "Tag Heuer", letter: "TH" },
-  { name: "Cartier", letter: "C" },
-  { name: "Breitling", letter: "B" },
   { name: "Patek Philippe", letter: "PP" },
+  { name: "Audemars Piguet", letter: "AP" },
+  { name: "Cartier", letter: "C" },
 ];
 
 export default function BrandLogos({ onBrandClick }) {
@@ -16,7 +15,7 @@ export default function BrandLogos({ onBrandClick }) {
         <p className="text-center text-accent-orange tracking-[0.3em] uppercase text-xs mb-12 font-semibold">
           Authorized Dealers
         </p>
-        <div className="grid grid-cols-3 md:grid-cols-6 gap-8">
+        <div className="grid grid-cols-3 md:grid-cols-5 gap-8">
           {brands.map((brand) => (
             <button
               key={brand.name}

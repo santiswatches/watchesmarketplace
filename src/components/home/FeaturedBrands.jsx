@@ -19,7 +19,7 @@ const BRAND_IMAGES = {
 };
 
 // Priority order for layout
-const BRAND_PRIORITY = ["rolex", "audemars piguet", "cartier", "patek philippe", "omega", "tag heuer", "breitling"];
+const BRAND_PRIORITY = ["rolex", "audemars piguet", "cartier", "patek philippe", "omega"];
 
 function getBrandImage(brand, watches) {
   const key = brand.toLowerCase();
@@ -55,6 +55,21 @@ export default function FeaturedBrands({ watches = [] }) {
       .sort((a, b) => counts[b] - counts[a])
       .forEach((b) => ordered.push(b));
 
+    // Pad with priority brands that have images but aren't in the DB
+    if (ordered.length < 4) {
+      BRAND_PRIORITY.forEach((priorityKey) => {
+        if (ordered.length >= 4) return;
+        const alreadyIncluded = ordered.some(
+          (b) => b.toLowerCase() === priorityKey
+        );
+        if (!alreadyIncluded && BRAND_IMAGES[priorityKey]) {
+          ordered.push(
+            priorityKey.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")
+          );
+        }
+      });
+    }
+
     return { brandCounts: counts, availableBrands: ordered.slice(0, 4) };
   }, [watches]);
 
@@ -89,7 +104,9 @@ export default function FeaturedBrands({ watches = [] }) {
                     {featured}
                   </p>
                   <p className="font-sans text-[11px] font-bold tracking-[0.25em] uppercase text-warm-black/55">
-                    {brandCounts[featured]} {brandCounts[featured] === 1 ? "Model" : "Models"}
+                    {brandCounts[featured] != null
+                      ? `${brandCounts[featured]} ${brandCounts[featured] === 1 ? "Model" : "Models"}`
+                      : "Coming Soon"}
                   </p>
                   <span className="mt-5 inline-block bg-accent-orange text-white font-sans text-[11px] font-bold tracking-widest uppercase px-5 py-2.5 w-fit hover:bg-accent-orange/90 transition-colors">
                     Explore
@@ -122,7 +139,9 @@ export default function FeaturedBrands({ watches = [] }) {
                     {tall}
                   </p>
                   <p className="font-sans text-[11px] font-bold tracking-[0.25em] uppercase text-warm-black/50 mt-1.5">
-                    {brandCounts[tall]} {brandCounts[tall] === 1 ? "Model" : "Models"}
+                    {brandCounts[tall] != null
+                      ? `${brandCounts[tall]} ${brandCounts[tall] === 1 ? "Model" : "Models"}`
+                      : "Coming Soon"}
                   </p>
                 </div>
                 {getBrandImage(tall, watches) && (
@@ -158,7 +177,9 @@ export default function FeaturedBrands({ watches = [] }) {
                     {brand}
                   </p>
                   <p className="font-sans text-[11px] font-bold tracking-[0.25em] uppercase text-warm-black/50">
-                    {brandCounts[brand]} {brandCounts[brand] === 1 ? "Model" : "Models"}
+                    {brandCounts[brand] != null
+                      ? `${brandCounts[brand]} ${brandCounts[brand] === 1 ? "Model" : "Models"}`
+                      : "Coming Soon"}
                   </p>
                 </div>
                 {getBrandImage(brand, watches) && (

@@ -1,4 +1,4 @@
-// Review API service — standalone fetch wrappers (no base44 dependency)
+// Review API service — standalone fetch wrappers
 
 export async function fetchReviewStats() {
     const res = await fetch('/api/reviews/stats');
@@ -50,6 +50,12 @@ export async function submitReview(token, data) {
     const json = await res.json();
     if (!res.ok) throw new Error(json.error || 'Failed to submit review');
     return json;
+}
+
+export async function fetchPublicReviews() {
+    const res = await fetch('/api/reviews/public');
+    if (!res.ok) throw new Error('Failed to fetch reviews');
+    return res.json();
 }
 
 export async function fetchProductReviews(productId) {

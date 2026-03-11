@@ -1,5 +1,85 @@
-import { requireAuth, safeError } from '../_shared/auth.js';
+import { requireAuth, requireAdmin, json, safeError } from '../../_shared/auth.js';
 
+// ── GET /api/orders — Admin: list all orders with customer + item details ────
+export async function onRequestGet({ request, env }) {
+    const { response: authError } = await requireAdmin(request, env);
+    if (authError) return authError;
+
+    try {
+        const url = new URL(request.url);
+        const statusFilter = url.searchParams.get('status');
+        const reviewSentFilter = url.searchParams.get('review_sent');
+
+        let query = `
+            SELECT o.id, o.client_id, o.total, o.status, o.created_date, o.review_sent,
+                   c.name as customer_name, c.email as customer_email
+            FROM orders o
+            LEFT JOIN clients c ON o.client_id = c.id
+            WHERE 1=1
+        `;
+        const bindings = [];
+        let bindIdx = 1;
+
+        if (statusFilter) {
+            query += ` AND o.status = ?${bindIdx}`;
+            bindings.push(statusFilter);
+            bindIdx++;
+        }
+        if (reviewSentFilter !== null && reviewSentFilter !== undefined && reviewSentFilter !== '') {
+            query += ` AND o.review_sent = ?${bindIdx}`;
+            bindings.push(parseInt(reviewSentFilter));
+            bindIdx++;
+        }
+
+        query += ` ORDER BY o.created_date DESC LIMIT 200`;
+
+        let stmt = env.DB.prepare(query);
+        if (bindings.length > 0) stmt = stmt.bind(...bindings);
+        const { results: orders } = await stmt.all();
+
+        // Fetch items for each order
+        if (orders && orders.length > 0) {
+            const orderIds = orders.map(o => o.id);
+            const placeholders = orderIds.map((_, i) => `?${i + 1}`).join(',');
+            const { results: items } = await env.DB.prepare(
+                `SELECT oi.order_id, oi.product_id, oi.quantity, oi.price,
+                        p.name as watch_name, p.brand as watch_brand, p.images
+                 FROM order_items oi
+                 LEFT JOIN products p ON oi.product_id = p.id
+                 WHERE oi.order_id IN (${placeholders})`
+            ).bind(...orderIds).all();
+
+            const itemsByOrder = {};
+            for (const item of (items || [])) {
+                if (!itemsByOrder[item.order_id]) itemsByOrder[item.order_id] = [];
+                let imageUrl = null;
+                try {
+                    const imgs = JSON.parse(item.images || '[]');
+                    imageUrl = imgs[0] || null;
+                } catch {}
+                itemsByOrder[item.order_id].push({
+                    product_id: item.product_id,
+                    watch_name: item.watch_name,
+                    watch_brand: item.watch_brand,
+                    quantity: item.quantity,
+                    price: item.price,
+                    image_url: imageUrl,
+                });
+            }
+
+            for (const order of orders) {
+                order.items = itemsByOrder[order.id] || [];
+            }
+        }
+
+        return json(orders || []);
+    } catch (err) {
+        console.error('[orders] List error:', err.message);
+        return safeError(500);
+    }
+}
+
+// ── POST /api/orders — Create order (existing) ──────────────────────────────
 const MAX_ITEMS = 50;
 const MAX_QUANTITY_PER_ITEM = 100;
 

@@ -1,7 +1,6 @@
 import React, { useState, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "../../utils";
-import { motion } from "framer-motion";
 import { ShoppingBag, Heart } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { getVideoMimeType } from "../../utils/media";
@@ -35,11 +34,7 @@ export default function WatchCard({ watch, index = 0, onAddToCart }) {
   }, [hasVideo]);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay: index * 0.08, duration: 0.45 }}
+    <div
       className="group relative"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -49,6 +44,7 @@ export default function WatchCard({ watch, index = 0, onAddToCart }) {
           <img
             src={watch.image_url || "/assets/watches/panda_daytona-removebg-preview.png"}
             alt={watch.name}
+            loading="lazy"
             className={`w-full h-full object-contain transition-all duration-500 ease-out ${
               isHovered && hasVideo ? "opacity-0" : "opacity-100 group-hover:scale-105"
             }`}
@@ -133,6 +129,6 @@ export default function WatchCard({ watch, index = 0, onAddToCart }) {
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

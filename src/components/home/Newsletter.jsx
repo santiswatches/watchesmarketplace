@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { motion } from "framer-motion";
 import { Send } from "lucide-react";
 
 export default function Newsletter() {
@@ -17,12 +16,7 @@ export default function Newsletter() {
   return (
     <section className="bg-cream py-24 border-t border-warm-border">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center max-w-xl mx-auto"
-        >
+        <div className="text-center max-w-xl mx-auto">
           <p className="text-[11px] font-semibold tracking-widest uppercase text-accent-orange mb-4">
             Stay Updated
           </p>
@@ -34,13 +28,9 @@ export default function Newsletter() {
           </p>
 
           {submitted ? (
-            <motion.p
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-accent-orange text-sm font-medium"
-            >
+            <p className="text-accent-orange text-sm font-medium">
               Thank you for subscribing. Welcome to our world.
-            </motion.p>
+            </p>
           ) : (
             <form onSubmit={handleSubmit} className="flex max-w-md mx-auto shadow-sm">
               <input
@@ -59,7 +49,7 @@ export default function Newsletter() {
               </button>
             </form>
           )}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

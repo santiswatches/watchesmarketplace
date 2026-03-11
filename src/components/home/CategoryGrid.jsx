@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "../../utils";
-import { motion } from "framer-motion";
 
 const CATEGORIES = [
   {
@@ -34,24 +33,13 @@ export default function CategoryGrid() {
   return (
     <section className="bg-offwhite py-20 md:py-28">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
-        <motion.p
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="font-condensed text-center text-3xl md:text-4xl font-bold uppercase tracking-wide text-warm-black mb-12"
-        >
+        <p className="font-condensed text-center text-3xl md:text-4xl font-bold uppercase tracking-wide text-warm-black mb-12">
           A Watch for Every Kind of Person
-        </motion.p>
+        </p>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {CATEGORIES.map((cat, i) => (
-            <motion.div
-              key={cat.name}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1, duration: 0.45 }}
-            >
+          {CATEGORIES.map((cat) => (
+            <div key={cat.name}>
               <Link
                 to={createPageUrl("shop") + cat.param}
                 className="group bg-[#EDECEA] rounded-2xl overflow-hidden flex flex-col hover:shadow-md transition-shadow duration-300"
@@ -75,7 +63,7 @@ export default function CategoryGrid() {
                   </p>
                 </div>
               </Link>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

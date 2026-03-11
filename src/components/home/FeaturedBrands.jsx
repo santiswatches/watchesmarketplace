@@ -1,7 +1,6 @@
 import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "../../utils";
-import { motion } from "framer-motion";
 
 const SHADOW = { filter: "drop-shadow(0 16px 36px rgba(0,0,0,0.15))" };
 
@@ -71,26 +70,15 @@ export default function FeaturedBrands({ watches = [] }) {
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
 
         {/* Section header */}
-        <motion.p
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="font-condensed text-center text-3xl md:text-4xl font-bold uppercase tracking-widest text-warm-black mb-12"
-        >
+        <p className="font-condensed text-center text-3xl md:text-4xl font-bold uppercase tracking-widest text-warm-black mb-12">
           Featured Brands
-        </motion.p>
+        </p>
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
 
           {/* ── Featured brand — wide card ── */}
           {featured && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0, duration: 0.45 }}
-              className="col-span-2 md:col-span-2 md:col-start-1 md:row-start-1"
-            >
+            <div className="col-span-2 md:col-span-2 md:col-start-1 md:row-start-1">
               <Link
                 to={createPageUrl("shop") + "?brand=" + encodeURIComponent(featured)}
                 className="group flex items-center justify-between rounded-2xl overflow-hidden p-7 md:p-9 h-full hover:shadow-lg transition-shadow duration-300"
@@ -118,18 +106,12 @@ export default function FeaturedBrands({ watches = [] }) {
                   </div>
                 )}
               </Link>
-            </motion.div>
+            </div>
           )}
 
           {/* ── Tall brand — spans 2 rows on desktop ── */}
           {tall && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1, duration: 0.45 }}
-              className="col-span-2 md:col-span-1 md:col-start-3 md:row-start-1 md:row-span-2"
-            >
+            <div className="col-span-2 md:col-span-1 md:col-start-3 md:row-start-1 md:row-span-2">
               <Link
                 to={createPageUrl("shop") + "?brand=" + encodeURIComponent(tall)}
                 className="group flex flex-col justify-between rounded-2xl overflow-hidden p-6 h-full hover:shadow-lg transition-shadow duration-300"
@@ -157,17 +139,13 @@ export default function FeaturedBrands({ watches = [] }) {
                   Explore
                 </span>
               </Link>
-            </motion.div>
+            </div>
           )}
 
           {/* ── Secondary brands ── */}
           {secondaryBrands.map((brand, i) => (
-            <motion.div
+            <div
               key={brand}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.15 + i * 0.05, duration: 0.45 }}
               className={`${i === 0 ? "md:col-start-1" : "md:col-start-2"} md:row-start-2`}
             >
               <Link
@@ -194,7 +172,7 @@ export default function FeaturedBrands({ watches = [] }) {
                   </div>
                 )}
               </Link>
-            </motion.div>
+            </div>
           ))}
 
         </div>

@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useMemo, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { createPageUrl } from "../utils";
 import { base44 } from "@/services/api";
 import { useQuery } from "@tanstack/react-query";
@@ -33,7 +33,8 @@ const SORT_OPTIONS = [
 
 export default function Shop() {
   const navigate = useNavigate();
-  const urlParams = new URLSearchParams(window.location.search);
+  const location = useLocation();
+  const urlParams = new URLSearchParams(location.search);
   const initialBrand = urlParams.get("brand") || "All";
   const initialCategory = urlParams.get("category") || "all";
   const initialMaterial = urlParams.get("material") || "All";
@@ -44,6 +45,13 @@ export default function Shop() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sort, setSort] = useState("newest");
   const [showFilters, setShowFilters] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    setBrand(params.get("brand") || "All");
+    setCategory(params.get("category") || "all");
+    setMaterial(params.get("material") || "All");
+  }, [location.search]);
 
   const { data: watches = [], isLoading } = useQuery({
     queryKey: ["watches-shop"],

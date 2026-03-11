@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createPageUrl } from "./utils";
-import { ShoppingBag, Menu, X, User, LogOut } from "lucide-react";
+import { ShoppingBag, Menu, X, User, LogOut, Heart } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
-import { base44 } from "@/services/api";
+import { api } from "@/services/api";
+import { toast } from "sonner";
 import CartDrawer from "./components/shared/CartDrawer";
+import FavoritesDrawer from "./components/shared/FavoritesDrawer";
+import Footer from "./components/shared/Footer";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,8 +18,8 @@ import {
 
 const NAV_LINKS = [
   { label: "Catalog", page: "shop" },
-  { label: "Discover Your Watch", page: "shop", params: "?category=new_arrival" },
-  { label: "Collections", page: "shop", params: "?category=bestseller" },
+  { label: "New Arrivals", page: "shop", params: "?category=new_arrival" },
+  { label: "Bestsellers", page: "shop", params: "?category=bestseller" },
 ];
 
 const ADMIN_LINKS = [
@@ -30,11 +33,36 @@ export default function Layout({ children, currentPageName }) {
   if (STANDALONE_PAGES.includes(currentPageName)) {
     return <>{children}</>;
   }
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const scrollToContact = (e) => {
+    e.preventDefault();
+    if (location.pathname === "/home" || location.pathname === "/") {
+      document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+    } else {
+      navigate("/home#contact");
+    }
+    setMobileMenuOpen(false);
+  };
+
+  // Handle hash scroll on page load / navigation
+  useEffect(() => {
+    if (location.hash === "#contact") {
+      setTimeout(() => {
+        document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+      }, 300);
+    }
+  }, [location]);
+
   const [cart, setCart] = useState(() => {
     const saved = localStorage.getItem("watch_cart");
     return saved ? JSON.parse(saved) : [];
   });
   const [cartOpen, setCartOpen] = useState(false);
+  const [favorites, setFavorites] = useState([]);
+  const favoritesRef = useRef(favorites);
+  const [favoritesOpen, setFavoritesOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [user, setUser] = useState(null);
@@ -46,6 +74,60 @@ export default function Layout({ children, currentPageName }) {
     window.__setWatchCart = setCart;
     window.__openCart = () => setCartOpen(true);
   }, [cart]);
+
+  // Favorites: load from API when user is available
+  useEffect(() => {
+    if (!user) { setFavorites([]); return; }
+    api.favorites.list()
+      .then(setFavorites)
+      .catch((err) => {
+        console.error('[favorites] Load failed:', err.message);
+        setFavorites([]);
+      });
+  }, [user]);
+
+  // Keep ref in sync and notify child components
+  useEffect(() => {
+    favoritesRef.current = favorites;
+    window.__favorites = favorites;
+    window.dispatchEvent(new CustomEvent('favorites-changed'));
+  }, [favorites]);
+
+  // Expose stable global helpers (only recreate when user changes)
+  useEffect(() => {
+    window.__setFavorites = setFavorites;
+    window.__openFavorites = () => setFavoritesOpen(true);
+    window.__toggleFavorite = async (productId, productData) => {
+      if (!user) { api.auth.redirectToLogin(); return; }
+      const isFav = favoritesRef.current.some(f => f.product_id === productId);
+      if (isFav) {
+        setFavorites(prev => prev.filter(f => f.product_id !== productId));
+        try {
+          await api.favorites.remove(productId);
+          const fresh = await api.favorites.list();
+          setFavorites(fresh);
+        } catch (err) {
+          console.error('[favorites] Remove failed:', err.message);
+          const fresh = await api.favorites.list().catch(() => favoritesRef.current);
+          setFavorites(fresh);
+          toast.error('Could not remove favorite');
+        }
+      } else {
+        const optimistic = { product_id: productId, ...productData };
+        setFavorites(prev => [optimistic, ...prev]);
+        try {
+          await api.favorites.add(productId);
+          const fresh = await api.favorites.list();
+          setFavorites(fresh);
+        } catch (err) {
+          console.error('[favorites] Add failed:', err.message);
+          setFavorites(prev => prev.filter(f => f.product_id !== productId));
+          toast.error('Could not save to favorites');
+        }
+      }
+    };
+    window.__isFavorite = (productId) => favoritesRef.current.some(f => f.product_id === productId);
+  }, [user]);
 
   useEffect(() => {
     let ticking = false;
@@ -65,7 +147,7 @@ export default function Layout({ children, currentPageName }) {
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const currentUser = await base44.auth.me();
+        const currentUser = await api.auth.me();
         setUser(currentUser);
       } catch (error) {
         setUser(null);
@@ -77,7 +159,7 @@ export default function Layout({ children, currentPageName }) {
   }, []);
 
   const handleLogout = async () => {
-    await base44.auth.logout();
+    await api.auth.logout();
   };
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -139,12 +221,13 @@ export default function Layout({ children, currentPageName }) {
               )}
 
               {/* Contact link */}
-              <Link
-                to={createPageUrl("shop")}
-                className="hidden md:block text-[11px] font-semibold tracking-widest uppercase text-warm-black hover:text-accent-orange transition-colors duration-200"
+              <a
+                href="#contact"
+                onClick={scrollToContact}
+                className="hidden md:block text-[11px] font-semibold tracking-widest uppercase text-warm-black hover:text-accent-orange transition-colors duration-200 cursor-pointer"
               >
                 Contact
-              </Link>
+              </a>
 
               {!isLoadingUser && (
                 user ? (
@@ -175,13 +258,28 @@ export default function Layout({ children, currentPageName }) {
                   </DropdownMenu>
                 ) : (
                   <button
-                    onClick={() => base44.auth.redirectToLogin(window.location.pathname)}
+                    onClick={() => api.auth.redirectToLogin(window.location.pathname)}
                     className="text-green-700 hover:text-green-900 transition-colors text-[11px] font-semibold tracking-widest uppercase"
                   >
                     Sign In
                   </button>
                 )
               )}
+
+              <button
+                onClick={() => {
+                  if (!user) { api.auth.redirectToLogin(); return; }
+                  setFavoritesOpen(true);
+                }}
+                className="relative text-warm-black/70 hover:text-warm-black transition-colors"
+              >
+                <Heart className={`w-4 h-4 ${favorites.length > 0 ? "fill-accent-orange text-accent-orange" : ""}`} />
+                {favorites.length > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-accent-orange text-white text-[9px] rounded-full flex items-center justify-center font-medium">
+                    {favorites.length}
+                  </span>
+                )}
+              </button>
 
               <button
                 onClick={() => setCartOpen(true)}
@@ -218,6 +316,13 @@ export default function Layout({ children, currentPageName }) {
                     {link.label}
                   </Link>
                 ))}
+                <a
+                  href="#contact"
+                  onClick={scrollToContact}
+                  className="block text-[11px] font-semibold tracking-widest uppercase py-2 text-warm-black hover:text-accent-orange transition-colors cursor-pointer"
+                >
+                  Contact
+                </a>
                 {isAdmin && ADMIN_LINKS.map((link) => (
                   <Link
                     key={link.label}
@@ -237,52 +342,48 @@ export default function Layout({ children, currentPageName }) {
       {/* Main Content */}
       <main>{children}</main>
 
-      {/* Footer */}
-      <footer className="bg-offwhite border-t border-warm-border pt-16 pb-8">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
-            <div className="md:col-span-2">
-              <h3 className="font-condensed text-2xl font-bold uppercase tracking-widest text-warm-black mb-4">
-                Santi's Watches
-              </h3>
-              <p className="text-muted-warm text-sm font-light leading-relaxed max-w-sm">
-                Your trusted source for the finest luxury timepieces. Every watch in our collection
-                is authenticated and comes with our promise of excellence.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-condensed text-xs font-bold tracking-widest uppercase text-muted-warm mb-4">Quick Links</h4>
-              <div className="space-y-3">
-                {[{ label: "Home", page: "home" }, { label: "Shop", page: "shop" }].map(({ label, page }) => (
-                  <Link
-                    key={page}
-                    to={createPageUrl(page)}
-                    className="block text-muted-warm hover:text-accent-orange text-sm transition-colors"
-                  >
-                    {label}
-                  </Link>
-                ))}
-              </div>
-            </div>
-            <div>
-              <h4 className="font-condensed text-xs font-bold tracking-widest uppercase text-muted-warm mb-4">Support</h4>
-              <div className="space-y-3 text-muted-warm text-sm">
-                <p>contact@santiwatches.com</p>
-                <p>+1 (888) 555-0123</p>
-                <p>Mon-Fri, 9am - 6pm EST</p>
-              </div>
-            </div>
-          </div>
-          <div className="border-t border-warm-border pt-8 text-center">
-            <p className="text-muted-warm/60 text-xs tracking-wider">
-              © 2026 Santi's Watches. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
 
       {/* Cart Drawer */}
       <CartDrawer isOpen={cartOpen} onClose={() => setCartOpen(false)} cart={cart} setCart={setCart} />
+
+      {/* Favorites Drawer */}
+      <FavoritesDrawer
+        isOpen={favoritesOpen}
+        onClose={() => setFavoritesOpen(false)}
+        favorites={favorites}
+        onRemove={async (productId) => {
+          setFavorites(prev => prev.filter(f => f.product_id !== productId));
+          try {
+            await api.favorites.remove(productId);
+            const fresh = await api.favorites.list();
+            setFavorites(fresh);
+          } catch (err) {
+            console.error('[favorites] Remove failed:', err.message);
+            const fresh = await api.favorites.list().catch(() => favoritesRef.current);
+            setFavorites(fresh);
+            toast.error('Could not remove favorite');
+          }
+        }}
+        onAddToCart={(item) => {
+          const existing = cart.find(c => c.id === item.product_id);
+          if (existing) {
+            setCart(prev => prev.map(c => c.id === item.product_id ? { ...c, quantity: c.quantity + 1 } : c));
+          } else {
+            setCart(prev => [...prev, {
+              id: item.product_id,
+              watch_id: item.product_id,
+              name: item.name,
+              brand: item.brand,
+              price: item.price,
+              image_url: item.image_url,
+              quantity: 1,
+            }]);
+          }
+          setFavoritesOpen(false);
+          setCartOpen(true);
+        }}
+      />
     </div>
   );
 }

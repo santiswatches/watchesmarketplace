@@ -1,7 +1,8 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "../../utils";
 import { ShoppingBag, Heart } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { getVideoMimeType } from "../../utils/media";
 
@@ -12,7 +13,30 @@ export default function WatchCard({ watch, index = 0, onAddToCart }) {
 
   const hasVideo = watch.videos?.length > 0;
   const [isHovered, setIsHovered] = useState(false);
+  const [isFav, setIsFav] = useState(false);
   const videoRef = useRef(null);
+
+  useEffect(() => {
+    const sync = () => setIsFav(window.__isFavorite?.(watch.id) || false);
+    sync();
+    window.addEventListener('favorites-changed', sync);
+    return () => window.removeEventListener('favorites-changed', sync);
+  }, [watch.id]);
+
+  const handleToggleFavorite = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsFav(prev => !prev);
+    const images = watch.images ? (typeof watch.images === 'string' ? JSON.parse(watch.images) : watch.images) : [];
+    window.__toggleFavorite?.(watch.id, {
+      name: watch.name,
+      brand: watch.brand,
+      price: watch.price,
+      original_price: watch.original_price,
+      image_url: watch.image_url || images[0] || null,
+      category: watch.category,
+    });
+  };
 
   const handleMouseEnter = useCallback(() => {
     if (!hasVideo) return;
@@ -95,15 +119,21 @@ export default function WatchCard({ watch, index = 0, onAddToCart }) {
             >
               <ShoppingBag className="w-4 h-4" />
             </button>
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-              }}
-              className="w-9 h-9 bg-white border border-warm-border rounded-lg flex items-center justify-center hover:bg-offwhite transition-colors duration-200"
+            <motion.button
+              onClick={handleToggleFavorite}
+              whileTap={{ scale: 0.8 }}
+              className={`w-9 h-9 bg-white border border-warm-border rounded-lg flex items-center justify-center hover:bg-offwhite transition-colors duration-200 ${isFav ? "border-accent-orange" : ""}`}
             >
-              <Heart className="w-4 h-4 text-muted-warm" />
-            </button>
+              <motion.span
+                key={isFav ? "saved" : "unsaved"}
+                initial={{ scale: 0.5 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 500, damping: 15 }}
+                className="flex"
+              >
+                <Heart className={`w-4 h-4 ${isFav ? "fill-accent-orange text-accent-orange" : "text-muted-warm"}`} />
+              </motion.span>
+            </motion.button>
           </div>
         </div>
       </Link>

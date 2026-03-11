@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { base44 } from "@/services/api";
+import { api } from "@/services/api";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "../utils";
@@ -19,11 +19,19 @@ export default function ProductDetail() {
   const [quantity, setQuantity] = useState(1);
   const [selectedMedia, setSelectedMedia] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState(null);
+  const [isFav, setIsFav] = useState(false);
+
+  useEffect(() => {
+    const sync = () => setIsFav(window.__isFavorite?.(watchId) || false);
+    sync();
+    window.addEventListener('favorites-changed', sync);
+    return () => window.removeEventListener('favorites-changed', sync);
+  }, [watchId]);
 
   const { data: watch, isLoading } = useQuery({
     queryKey: ["watch", watchId],
     queryFn: async () => {
-      const watches = await base44.entities.Watch.list();
+      const watches = await api.watches.list();
       return watches.find((w) => w.id === watchId);
     },
     enabled: !!watchId,
@@ -31,7 +39,7 @@ export default function ProductDetail() {
 
   const { data: allWatches } = useQuery({
     queryKey: ["watches-related"],
-    queryFn: () => base44.entities.Watch.list(),
+    queryFn: () => api.watches.list(),
     enabled: !!watch,
   });
 
@@ -44,9 +52,9 @@ export default function ProductDetail() {
   const addToCart = async () => {
     if (!watch) return;
 
-    const isAuthenticated = await base44.auth.isAuthenticated();
+    const isAuthenticated = await api.auth.isAuthenticated();
     if (!isAuthenticated) {
-      base44.auth.redirectToLogin(window.location.pathname);
+      api.auth.redirectToLogin(window.location.pathname);
       return;
     }
 
@@ -106,6 +114,18 @@ export default function ProductDetail() {
   const videos = watch.videos || [];
   const mediaItems = buildMediaItems(images, videos);
 
+  const toggleFavorite = () => {
+    setIsFav(prev => !prev);
+    window.__toggleFavorite?.(watch.id, {
+      name: watch.name,
+      brand: watch.brand,
+      price: watch.price,
+      original_price: watch.original_price,
+      image_url: images[0] || null,
+      category: watch.category,
+    });
+  };
+
   const discount = currentOriginalPrice
     ? Math.round(((currentOriginalPrice - currentPrice) / currentOriginalPrice) * 100)
     : 0;
@@ -120,10 +140,6 @@ export default function ProductDetail() {
   const relatedWatches = allWatches
     ? allWatches.filter((w) => w.id !== watch.id && w.brand === watch.brand).slice(0, 4)
     : [];
-  const fallbackWatches = allWatches
-    ? allWatches.filter((w) => w.id !== watch.id).slice(0, 4)
-    : [];
-  const displayRelated = relatedWatches.length >= 2 ? relatedWatches : fallbackWatches;
 
   return (
     <div className="bg-cream min-h-screen">
@@ -159,7 +175,7 @@ export default function ProductDetail() {
                     onClick={() => setSelectedMedia(i)}
                     className={`relative w-16 h-16 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
                       selectedMedia === i
-                        ? "border-amber-gold opacity-100"
+                        ? "border-accent-orange opacity-100"
                         : "border-warm-border opacity-50 hover:opacity-80"
                     }`}
                   >
@@ -179,7 +195,7 @@ export default function ProductDetail() {
             )}
 
             {/* Main media */}
-            <div className="flex-1 aspect-[3/4] overflow-hidden rounded-xl bg-cream">
+            <div className="flex-1 aspect-square overflow-hidden rounded-xl bg-cream">
               {mediaItems[selectedMedia]?.type === 'video' ? (
                 <VideoPlayer
                   src={mediaItems[selectedMedia].url}
@@ -193,7 +209,7 @@ export default function ProductDetail() {
                 <img
                   src={mediaItems[selectedMedia]?.url}
                   alt={watch.name}
-                  className="w-full h-full object-cover mix-blend-multiply"
+                  className="w-full h-full object-contain mix-blend-multiply"
                 />
               )}
             </div>
@@ -215,7 +231,7 @@ export default function ProductDetail() {
             </h1>
 
             {/* Price */}
-            <div className="flex items-baseline gap-4 border-l-2 border-amber-gold pl-4 mb-8">
+            <div className="flex items-baseline gap-4 border-l-2 border-accent-orange pl-4 mb-8">
               <span className="text-warm-black text-3xl font-light">${currentPrice?.toLocaleString()}</span>
               {currentOriginalPrice && currentOriginalPrice > currentPrice && (
                 <>
@@ -304,10 +320,24 @@ export default function ProductDetail() {
                     <Plus className="w-3.5 h-3.5" />
                   </button>
                 </div>
-                <button className="flex items-center gap-2 text-muted-warm hover:text-accent-orange text-xs tracking-wider uppercase transition-colors">
-                  <Heart className="w-3.5 h-3.5" />
-                  Save
-                </button>
+                <motion.button
+                  onClick={toggleFavorite}
+                  whileTap={{ scale: 0.85 }}
+                  className={`flex items-center gap-2 text-xs tracking-wider uppercase transition-colors ${
+                    isFav ? "text-accent-orange" : "text-muted-warm hover:text-accent-orange"
+                  }`}
+                >
+                  <motion.span
+                    key={isFav ? "saved" : "unsaved"}
+                    initial={{ scale: 0.5 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", stiffness: 500, damping: 15 }}
+                    className="flex"
+                  >
+                    <Heart className={`w-3.5 h-3.5 transition-colors duration-200 ${isFav ? "fill-accent-orange" : ""}`} />
+                  </motion.span>
+                  {isFav ? "Saved" : "Save"}
+                </motion.button>
               </div>
 
               <button
@@ -322,17 +352,17 @@ export default function ProductDetail() {
             {/* Trust badges — horizontal inline */}
             <div className="border-t border-warm-border pt-6 flex items-center justify-between">
               <div className="flex items-center gap-2 text-muted-warm">
-                <Shield className="w-4 h-4 text-amber-gold shrink-0" />
+                <Shield className="w-4 h-4 text-accent-orange shrink-0" />
                 <span className="text-[10px] tracking-[0.15em] uppercase">Authenticated</span>
               </div>
               <div className="w-px h-5 bg-warm-border" />
               <div className="flex items-center gap-2 text-muted-warm">
-                <Truck className="w-4 h-4 text-amber-gold shrink-0" />
+                <Truck className="w-4 h-4 text-accent-orange shrink-0" />
                 <span className="text-[10px] tracking-[0.15em] uppercase">Free Shipping</span>
               </div>
               <div className="w-px h-5 bg-warm-border" />
               <div className="flex items-center gap-2 text-muted-warm">
-                <RotateCcw className="w-4 h-4 text-amber-gold shrink-0" />
+                <RotateCcw className="w-4 h-4 text-accent-orange shrink-0" />
                 <span className="text-[10px] tracking-[0.15em] uppercase">30-Day Returns</span>
               </div>
             </div>
@@ -362,7 +392,7 @@ export default function ProductDetail() {
                         key={i}
                         className={`w-3.5 h-3.5 ${
                           i < review.rating
-                            ? "fill-amber-gold text-amber-gold"
+                            ? "fill-accent-orange text-accent-orange"
                             : "fill-none text-warm-border"
                         }`}
                       />
@@ -389,17 +419,17 @@ export default function ProductDetail() {
       )}
 
       {/* Related watches */}
-      {displayRelated.length > 0 && (
+      {relatedWatches.length > 0 && (
         <div className="bg-offwhite border-t border-warm-border py-16 mt-4">
           <div className="max-w-7xl mx-auto px-6 lg:px-12">
             <p className="text-accent-orange text-[10px] tracking-[0.35em] uppercase font-semibold mb-2">
-              You May Also Like
+              From the Same House
             </p>
             <h2 className="text-2xl md:text-3xl font-extralight text-warm-black tracking-tight mb-10">
               More from {watch.brand}
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
-              {displayRelated.map((w, i) => (
+              {relatedWatches.map((w, i) => (
                 <WatchCard key={w.id} watch={w} index={i} />
               ))}
             </div>

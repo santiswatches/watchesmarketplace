@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Send, CheckCircle, Filter, Mail, Pencil, Eye } from "lucide-react";
+import { Send, CheckCircle, Filter, Mail, Pencil, Eye, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -167,6 +167,11 @@ export default function OrdersManager() {
                     <Badge className={`${statusColors[order.status] || statusColors.pending} text-[10px] tracking-wider uppercase rounded-sm border`}>
                       {order.status}
                     </Badge>
+                    {order.return_guarantee ? (
+                      <span className="flex items-center gap-1 text-[10px] text-amber-gold font-semibold">
+                        <ShieldCheck className="w-3 h-3" /> Return Guarantee
+                      </span>
+                    ) : null}
                     {order.review_sent ? (
                       <span className="flex items-center gap-1 text-[10px] text-accent-orange font-semibold">
                         <Mail className="w-3 h-3" /> Review sent

@@ -123,7 +123,32 @@ export const base44 = {
                 });
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.error || 'Upload failed');
-                return { file_url: data.file_url };
+                return { file_url: data.file_url, media_type: data.media_type };
+            },
+            UploadFileWithProgress: ({ file, onProgress }) => {
+                return new Promise((resolve, reject) => {
+                    const xhr = new XMLHttpRequest();
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    xhr.upload.addEventListener('progress', (e) => {
+                        if (e.lengthComputable) onProgress?.(Math.round((e.loaded / e.total) * 100));
+                    });
+                    xhr.addEventListener('load', () => {
+                        try {
+                            const data = JSON.parse(xhr.responseText);
+                            if (xhr.status >= 200 && xhr.status < 300) {
+                                resolve({ file_url: data.file_url, media_type: data.media_type });
+                            } else {
+                                reject(new Error(data.error || 'Upload failed'));
+                            }
+                        } catch {
+                            reject(new Error('Upload failed'));
+                        }
+                    });
+                    xhr.addEventListener('error', () => reject(new Error('Upload failed')));
+                    xhr.open('POST', '/api/upload');
+                    xhr.send(formData);
+                });
             }
         }
     },

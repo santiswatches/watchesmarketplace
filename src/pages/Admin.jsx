@@ -296,11 +296,11 @@ export default function Admin() {
               animate={{ opacity: 1, y: 0 }}
               className="bg-white border border-warm-border rounded-xl overflow-hidden"
             >
-              <div className="aspect-square bg-offwhite">
+              <div className="aspect-square bg-offwhite flex items-center justify-center p-4">
                 <img
                   src={watch.images?.[0] || watch.image_url || "/assets/watches/panda_daytona-removebg-preview.png"}
                   alt={watch.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                 />
               </div>
               <div className="p-4">

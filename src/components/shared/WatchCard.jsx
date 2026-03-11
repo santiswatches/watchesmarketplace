@@ -45,11 +45,11 @@ export default function WatchCard({ watch, index = 0, onAddToCart }) {
       onMouseLeave={handleMouseLeave}
     >
       <Link to={createPageUrl("product-detail") + `?id=${watch.id}`}>
-        <div className="relative aspect-square overflow-hidden bg-offwhite border border-warm-border rounded-xl hover:shadow-md transition-shadow duration-300">
+        <div className="relative aspect-square overflow-hidden bg-offwhite border border-warm-border rounded-xl hover:shadow-md transition-shadow duration-300 flex items-center justify-center p-4">
           <img
             src={watch.image_url || "/assets/watches/panda_daytona-removebg-preview.png"}
             alt={watch.name}
-            className={`w-full h-full object-cover transition-all duration-500 ease-out ${
+            className={`w-full h-full object-contain transition-all duration-500 ease-out ${
               isHovered && hasVideo ? "opacity-0" : "opacity-100 group-hover:scale-105"
             }`}
           />

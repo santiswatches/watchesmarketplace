@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import { base44 } from "@/services/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Plus, Pencil, Trash2, Upload, X, Film } from "lucide-react";
+import { Plus, Pencil, Trash2, Upload, X, Film, MessageSquare, ShoppingBag } from "lucide-react";
+import ReviewsManager from "@/components/admin/ReviewsManager";
+import OrdersManager from "@/components/admin/OrdersManager";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -99,6 +101,7 @@ function formToWatch(formData) {
 export default function Admin() {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("watches");
   const [showDialog, setShowDialog] = useState(false);
   const [editingWatch, setEditingWatch] = useState(null);
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -275,20 +278,62 @@ export default function Admin() {
   return (
     <div className="bg-offwhite min-h-screen pt-24 pb-20">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
-        <div className="flex items-center justify-between mb-10">
+        <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-3xl text-warm-black font-light tracking-tight">Admin Dashboard</h1>
-            <p className="text-muted-warm text-sm mt-1">Manage watch inventory</p>
           </div>
-          <Button
-            onClick={() => setShowDialog(true)}
-            className="bg-amber-gold text-warm-black hover:bg-amber-gold/90 gap-2"
-          >
-            <Plus className="w-4 h-4" /> Add Watch
-          </Button>
+          {activeTab === "watches" && (
+            <Button
+              onClick={() => setShowDialog(true)}
+              className="bg-accent-orange text-white hover:bg-accent-orange/90 gap-2"
+            >
+              <Plus className="w-4 h-4" /> Add Watch
+            </Button>
+          )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Tabs */}
+        <div className="flex items-center gap-1 mb-8 bg-white border border-warm-border rounded-lg p-1 w-fit">
+          <button
+            onClick={() => setActiveTab("watches")}
+            className={`px-4 py-2 text-xs font-semibold tracking-wider uppercase rounded-md transition-colors ${
+              activeTab === "watches"
+                ? "bg-warm-black text-white"
+                : "text-muted-warm hover:text-warm-black"
+            }`}
+          >
+            Watches
+          </button>
+          <button
+            onClick={() => setActiveTab("orders")}
+            className={`px-4 py-2 text-xs font-semibold tracking-wider uppercase rounded-md transition-colors flex items-center gap-1.5 ${
+              activeTab === "orders"
+                ? "bg-warm-black text-white"
+                : "text-muted-warm hover:text-warm-black"
+            }`}
+          >
+            <ShoppingBag className="w-3.5 h-3.5" /> Orders
+          </button>
+          <button
+            onClick={() => setActiveTab("reviews")}
+            className={`px-4 py-2 text-xs font-semibold tracking-wider uppercase rounded-md transition-colors flex items-center gap-1.5 ${
+              activeTab === "reviews"
+                ? "bg-warm-black text-white"
+                : "text-muted-warm hover:text-warm-black"
+            }`}
+          >
+            <MessageSquare className="w-3.5 h-3.5" /> Reviews
+          </button>
+        </div>
+
+        {/* Orders Tab */}
+        {activeTab === "orders" && <OrdersManager />}
+
+        {/* Reviews Tab */}
+        {activeTab === "reviews" && <ReviewsManager />}
+
+        {/* Watches Tab */}
+        {activeTab === "watches" && <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {watches.map((watch) => (
             <motion.div
               key={watch.id}
@@ -328,7 +373,7 @@ export default function Admin() {
               </div>
             </motion.div>
           ))}
-        </div>
+        </div>}
 
         <Dialog open={showDialog} onOpenChange={(open) => !open && resetForm()}>
           <DialogContent className="bg-white border-warm-border text-warm-black max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -583,7 +628,7 @@ export default function Admin() {
                 <Button
                   type="submit"
                   disabled={createMutation.isPending || updateMutation.isPending}
-                  className="flex-1 bg-amber-gold text-warm-black hover:bg-amber-gold/90"
+                  className="flex-1 bg-accent-orange text-white hover:bg-accent-orange/90"
                 >
                   {editingWatch ? "Update" : "Create"}
                 </Button>

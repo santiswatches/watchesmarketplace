@@ -3,7 +3,7 @@ import { base44 } from "@/services/api";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "../utils";
 import { motion } from "framer-motion";
-import { ChevronLeft, Lock, ShieldCheck } from "lucide-react";
+import { ChevronLeft, Lock, ShieldCheck, Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,6 +19,7 @@ export default function Checkout() {
   const [orderComplete, setOrderComplete] = useState(false);
   const [paypalLoaded, setPaypalLoaded] = useState(false);
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
+  const [returnGuarantee, setReturnGuarantee] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -48,9 +49,9 @@ export default function Checkout() {
     if (saved) setCart(JSON.parse(saved));
   }, []);
 
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shipping = total > 5000 ? 0 : 75;
-  const grandTotal = total + shipping;
+  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const returnGuaranteeFee = returnGuarantee ? 20 : 0;
+  const grandTotal = subtotal + returnGuaranteeFee;
 
   // Load PayPal SDK
   useEffect(() => {
@@ -109,6 +110,7 @@ export default function Checkout() {
               image_url: item.image_url,
             })),
             total_amount: grandTotal,
+            return_guarantee: returnGuarantee,
             status: "paid",
             paypal_order_id: details.id,
             shipping_address: formData.address,
@@ -279,15 +281,45 @@ export default function Checkout() {
                 ))}
               </div>
 
+              {/* Return Guarantee Add-on */}
+              <button
+                type="button"
+                onClick={() => setReturnGuarantee(prev => !prev)}
+                className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-colors text-left mb-2 ${
+                  returnGuarantee
+                    ? "border-accent-orange bg-accent-orange/5"
+                    : "border-warm-border hover:bg-offwhite"
+                }`}
+              >
+                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
+                  returnGuarantee
+                    ? "border-accent-orange bg-accent-orange"
+                    : "border-warm-border"
+                }`}>
+                  {returnGuarantee && (
+                    <Check className="w-3 h-3 text-white" />
+                  )}
+                </div>
+                <div className="flex-1">
+                  <p className="text-warm-black text-xs font-medium">Return Guarantee</p>
+                  <p className="text-muted-warm text-[10px] leading-relaxed">
+                    Add for $20 — guarantees the option to return for a full refund
+                  </p>
+                </div>
+                <span className="text-accent-orange text-xs font-semibold flex-shrink-0">$20</span>
+              </button>
+
               <div className="border-t border-warm-border pt-4 space-y-3">
                 <div className="flex justify-between text-xs">
                   <span className="text-muted-warm">Subtotal</span>
-                  <span className="text-warm-black">${total.toLocaleString()}</span>
+                  <span className="text-warm-black">${subtotal.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between text-xs">
-                  <span className="text-muted-warm">Shipping</span>
-                  <span className="text-warm-black">{shipping === 0 ? "Free" : `$${shipping}`}</span>
-                </div>
+                {returnGuarantee && (
+                  <div className="flex justify-between text-xs">
+                    <span className="text-muted-warm">Return Guarantee</span>
+                    <span className="text-warm-black">$20</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-sm pt-3 border-t border-warm-border">
                   <span className="text-warm-black font-medium">Total</span>
                   <span className="text-accent-orange text-lg font-semibold">${grandTotal.toLocaleString()}</span>

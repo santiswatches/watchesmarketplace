@@ -4,7 +4,7 @@ import { createPageUrl } from "../utils";
 import { base44 } from "@/services/api";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { SlidersHorizontal, X, ChevronDown, Search } from "lucide-react";
+import { SlidersHorizontal, X, Search } from "lucide-react";
 import WatchCard from "../components/shared/WatchCard";
 import {
   Select,
@@ -107,7 +107,7 @@ export default function Shop() {
   const hasActiveFilters = brand !== "All" || category !== "all" || material !== "All" || searchQuery !== "";
 
   return (
-    <div className="bg-background min-h-screen pt-24 md:pt-28 pb-20">
+    <div className="bg-white min-h-screen pt-24 md:pt-28 pb-20">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         {/* Header */}
         <motion.div
@@ -115,85 +115,92 @@ export default function Shop() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-10"
         >
-          <p className="text-gold tracking-[0.3em] uppercase text-xs mb-2">Collection</p>
-          <h1 className="text-3xl md:text-5xl text-foreground font-light tracking-tight">
+          <p className="font-sans text-[11px] font-semibold tracking-widest uppercase text-accent-orange mb-2">Collection</p>
+          <h1 className="font-condensed text-4xl md:text-6xl font-bold uppercase tracking-tight text-warm-black">
             Our Timepieces
           </h1>
         </motion.div>
 
         {/* Filters Bar */}
-        <div className="flex flex-col gap-6 mb-10 border-b border-white/5 pb-6">
+        <div className="sticky top-16 md:top-[4.5rem] z-30 bg-white border-b border-warm-border pb-4 mb-8 -mx-6 px-6 lg:-mx-12 lg:px-12">
           {/* Search Bar */}
-          <div className="relative max-w-md w-full">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Search timepieces..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 bg-white/5 border border-white/10 px-5 py-2.5 text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:border-gold transition-colors"
-            />
+          <div className="flex items-center gap-4 mt-4 mb-4">
+            <div className="flex items-center gap-3 flex-1 max-w-md bg-white border border-warm-border rounded-full px-5 py-2.5 shadow-sm">
+              <Search className="w-4 h-4 text-muted-warm flex-shrink-0" />
+              <input
+                type="text"
+                placeholder="Search timepieces..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="flex-1 outline-none text-sm font-sans text-warm-black placeholder:text-muted-warm bg-transparent"
+              />
+              {searchQuery && (
+                <button onClick={() => setSearchQuery("")}>
+                  <X className="w-3.5 h-3.5 text-muted-warm hover:text-warm-black" />
+                </button>
+              )}
+            </div>
+
+            {/* Mobile filter toggle */}
+            <button
+              className="md:hidden flex items-center gap-2 px-4 py-2.5 border border-warm-border rounded-full text-warm-black text-[11px] font-semibold tracking-widest uppercase bg-white"
+              onClick={() => setShowFilters(!showFilters)}
+            >
+              <SlidersHorizontal className="w-3.5 h-3.5" />
+              Filters
+            </button>
           </div>
 
-          <div className="flex flex-wrap items-center gap-4">
-            {/* Brand pills (desktop) */}
+          <div className="flex flex-wrap items-center gap-2 md:gap-3">
+            {/* Brand pills — desktop */}
             <div className="hidden md:flex items-center gap-2 flex-wrap">
               {BRANDS.map((b) => (
                 <button
                   key={b}
                   onClick={() => setBrand(b)}
-                  className={`px-4 py-2 text-xs tracking-[0.1em] uppercase transition-all duration-300 rounded-sm ${brand === b
-                    ? "bg-gold text-primary-foreground font-medium"
-                    : "bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-white/80"
-                    }`}
+                  className={`px-4 py-1.5 text-[11px] font-semibold tracking-wide uppercase rounded-full border transition-all duration-200 ${brand === b
+                    ? "bg-accent-orange text-white border-accent-orange"
+                    : "bg-offwhite text-warm-black border-warm-border hover:border-accent-orange"
+                  }`}
                 >
                   {b}
                 </button>
               ))}
             </div>
 
-            {/* Mobile filter toggle */}
-            <button
-              className="md:hidden flex items-center gap-2 px-4 py-2 border border-white/10 text-white/60 text-xs tracking-[0.1em] uppercase"
-              onClick={() => setShowFilters(!showFilters)}
-            >
-              <SlidersHorizontal className="w-3.5 h-3.5" />
-              Filters
-            </button>
-
-            {/* Category & Sort */}
+            {/* Category & Sort — right aligned */}
             <div className="flex items-center gap-3 ml-auto">
               <Select value={category} onValueChange={setCategory}>
-                <SelectTrigger className="w-40 bg-white/5 border-white/10 text-white/70 text-xs">
+                <SelectTrigger className="w-40 bg-white border-warm-border text-warm-black text-xs rounded-full">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-card border-border/50">
+                <SelectContent className="bg-white border-warm-border">
                   {CATEGORIES.map((c) => (
-                    <SelectItem key={c.value} value={c.value} className="text-white/70 text-xs focus:bg-white/10 focus:text-white">
+                    <SelectItem key={c.value} value={c.value} className="text-warm-black text-xs focus:bg-offwhite">
                       {c.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               <Select value={material} onValueChange={setMaterial}>
-                <SelectTrigger className="w-40 bg-white/5 border-white/10 text-white/70 text-xs">
+                <SelectTrigger className="w-40 bg-white border-warm-border text-warm-black text-xs rounded-full">
                   <SelectValue placeholder="Material" />
                 </SelectTrigger>
-                <SelectContent className="bg-card border-border/50">
+                <SelectContent className="bg-white border-warm-border">
                   {MATERIALS.map((m) => (
-                    <SelectItem key={m} value={m} className="text-white/70 text-xs focus:bg-white/10 focus:text-white">
+                    <SelectItem key={m} value={m} className="text-warm-black text-xs focus:bg-offwhite">
                       {m}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               <Select value={sort} onValueChange={setSort}>
-                <SelectTrigger className="w-44 bg-white/5 border-white/10 text-white/70 text-xs">
+                <SelectTrigger className="w-44 bg-white border-warm-border text-warm-black text-xs rounded-full">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-card border-border/50">
+                <SelectContent className="bg-white border-warm-border">
                   {SORT_OPTIONS.map((s) => (
-                    <SelectItem key={s.value} value={s.value} className="text-white/70 text-xs focus:bg-white/10 focus:text-white">
+                    <SelectItem key={s.value} value={s.value} className="text-warm-black text-xs focus:bg-offwhite">
                       {s.label}
                     </SelectItem>
                   ))}
@@ -208,16 +215,16 @@ export default function Shop() {
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
-            className="md:hidden mb-8 flex flex-wrap gap-2"
+            className="md:hidden mb-6 flex flex-wrap gap-2"
           >
             {BRANDS.map((b) => (
               <button
                 key={b}
                 onClick={() => setBrand(b)}
-                className={`px-3 py-1.5 text-[10px] tracking-[0.1em] uppercase rounded-sm ${brand === b
-                  ? "bg-gold text-primary-foreground"
-                  : "bg-white/5 text-muted-foreground"
-                  }`}
+                className={`px-3 py-1.5 text-[11px] font-semibold tracking-wide uppercase rounded-full border transition-all ${brand === b
+                  ? "bg-accent-orange text-white border-accent-orange"
+                  : "bg-offwhite text-warm-black border-warm-border"
+                }`}
               >
                 {b}
               </button>
@@ -227,12 +234,12 @@ export default function Shop() {
 
         {/* Active Filters */}
         {hasActiveFilters && (
-          <div className="flex items-center gap-3 mb-6">
-            <span className="text-white/30 text-xs">Active filters:</span>
+          <div className="flex items-center gap-3 mb-5 flex-wrap">
+            <span className="font-sans text-[11px] font-semibold tracking-widest uppercase text-muted-warm">Active filters:</span>
             {brand !== "All" && (
               <button
                 onClick={() => setBrand("All")}
-                className="flex items-center gap-1 px-3 py-1 bg-gold/10 text-gold text-xs rounded-sm"
+                className="flex items-center gap-1 px-3 py-1 bg-accent-orange/10 border border-accent-orange/30 text-accent-orange text-[11px] font-semibold rounded-full"
               >
                 {brand} <X className="w-3 h-3" />
               </button>
@@ -240,7 +247,7 @@ export default function Shop() {
             {category !== "all" && (
               <button
                 onClick={() => setCategory("all")}
-                className="flex items-center gap-1 px-3 py-1 bg-gold/10 text-gold text-xs rounded-sm"
+                className="flex items-center gap-1 px-3 py-1 bg-accent-orange/10 border border-accent-orange/30 text-accent-orange text-[11px] font-semibold rounded-full"
               >
                 {CATEGORIES.find((c) => c.value === category)?.label} <X className="w-3 h-3" />
               </button>
@@ -248,7 +255,7 @@ export default function Shop() {
             {material !== "All" && (
               <button
                 onClick={() => setMaterial("All")}
-                className="flex items-center gap-1 px-3 py-1 bg-gold/10 text-gold text-xs rounded-sm"
+                className="flex items-center gap-1 px-3 py-1 bg-accent-orange/10 border border-accent-orange/30 text-accent-orange text-[11px] font-semibold rounded-full"
               >
                 {material} <X className="w-3 h-3" />
               </button>
@@ -256,7 +263,7 @@ export default function Shop() {
             {searchQuery !== "" && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="flex items-center gap-1 px-3 py-1 bg-gold/10 text-gold text-xs rounded-sm"
+                className="flex items-center gap-1 px-3 py-1 bg-accent-orange/10 border border-accent-orange/30 text-accent-orange text-[11px] font-semibold rounded-full"
               >
                 Search: {searchQuery} <X className="w-3 h-3" />
               </button>
@@ -265,7 +272,7 @@ export default function Shop() {
         )}
 
         {/* Results Count */}
-        <p className="text-white/30 text-xs mb-8">
+        <p className="font-sans text-xs text-muted-warm mb-8">
           {filteredWatches.length} timepiece{filteredWatches.length !== 1 ? "s" : ""}
         </p>
 
@@ -276,19 +283,19 @@ export default function Shop() {
               .fill(0)
               .map((_, i) => (
                 <div key={i} className="animate-pulse">
-                  <div className="aspect-square bg-white/5 rounded-sm" />
+                  <div className="aspect-square bg-offwhite rounded-xl" />
                   <div className="mt-4 space-y-2">
-                    <div className="h-3 bg-white/5 rounded w-16" />
-                    <div className="h-4 bg-white/5 rounded w-32" />
-                    <div className="h-3 bg-white/5 rounded w-20" />
+                    <div className="h-3 bg-offwhite rounded w-16" />
+                    <div className="h-4 bg-offwhite rounded w-32" />
+                    <div className="h-3 bg-offwhite rounded w-20" />
                   </div>
                 </div>
               ))}
           </div>
         ) : filteredWatches.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-white/30 text-lg font-light">No watches found</p>
-            <p className="text-white/20 text-sm mt-2">Try adjusting your filters</p>
+            <p className="font-condensed text-2xl font-bold uppercase text-warm-black/30">No watches found</p>
+            <p className="font-sans text-sm text-muted-warm mt-2">Try adjusting your filters</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">

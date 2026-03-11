@@ -130,29 +130,29 @@ export default function Checkout() {
 
   if (orderComplete) {
     return (
-      <div className="bg-[#0A0A0A] min-h-screen pt-24 flex items-center justify-center">
+      <div className="bg-offwhite min-h-screen pt-24 flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           className="text-center max-w-md mx-auto px-6"
         >
-          <div className="w-20 h-20 bg-gold/10 rounded-full flex items-center justify-center mx-auto mb-6">
-            <ShieldCheck className="w-10 h-10 text-gold" />
+          <div className="w-20 h-20 bg-accent-orange/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <ShieldCheck className="w-10 h-10 text-accent-orange" />
           </div>
-          <h1 className="text-3xl text-foreground font-light mb-3">Order Confirmed</h1>
-          <p className="text-muted-foreground text-sm font-light mb-8">
+          <h1 className="text-3xl text-warm-black font-light mb-3">Order Confirmed</h1>
+          <p className="text-muted-warm text-sm font-light mb-8">
             Thank you for your purchase. You'll receive a confirmation email shortly.
           </p>
           <div className="flex flex-col gap-3">
             <Link
               to={createPageUrl("my-orders")}
-              className="bg-gold text-primary-foreground py-3 text-xs tracking-[0.15em] uppercase font-medium hover:bg-gold-light transition-colors text-center"
+              className="bg-warm-black text-white py-3 text-xs tracking-[0.15em] uppercase font-medium hover:bg-warm-black/90 transition-colors text-center rounded-lg"
             >
               View My Orders
             </Link>
             <Link
               to={createPageUrl("home")}
-              className="text-muted-foreground text-xs tracking-[0.1em] uppercase hover:text-foreground transition-colors"
+              className="text-muted-warm text-xs tracking-[0.1em] uppercase hover:text-warm-black transition-colors"
             >
               Continue Shopping
             </Link>
@@ -164,17 +164,17 @@ export default function Checkout() {
 
   if (isLoadingAuth) {
     return (
-      <div className="bg-background min-h-screen pt-24 flex items-center justify-center">
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
+      <div className="bg-offwhite min-h-screen pt-24 flex items-center justify-center">
+        <div className="animate-pulse text-muted-warm">Loading...</div>
       </div>
     );
   }
 
   if (cart.length === 0) {
     return (
-      <div className="bg-background min-h-screen pt-24 flex flex-col items-center justify-center">
-        <p className="text-muted-foreground text-lg font-light mb-4">Your cart is empty</p>
-        <Link to={createPageUrl("shop")} className="text-gold text-sm hover:underline">
+      <div className="bg-offwhite min-h-screen pt-24 flex flex-col items-center justify-center">
+        <p className="text-muted-warm text-lg font-light mb-4">Your cart is empty</p>
+        <Link to={createPageUrl("shop")} className="text-accent-orange text-sm hover:underline">
           Browse Collection
         </Link>
       </div>
@@ -182,50 +182,50 @@ export default function Checkout() {
   }
 
   return (
-    <div className="bg-background min-h-screen pt-20 md:pt-24 pb-20">
+    <div className="bg-offwhite min-h-screen pt-20 md:pt-24 pb-20">
       <div className="max-w-5xl mx-auto px-6 lg:px-12">
         <Link
           to={createPageUrl("shop")}
-          className="inline-flex items-center gap-2 text-white/30 hover:text-white/60 text-xs tracking-wide mb-8 transition-colors"
+          className="inline-flex items-center gap-2 text-muted-warm hover:text-warm-black text-xs tracking-wide mb-8 transition-colors"
         >
           <ChevronLeft className="w-4 h-4" /> Continue Shopping
         </Link>
 
-        <h1 className="text-3xl text-foreground font-light tracking-tight mb-10">Checkout</h1>
+        <h1 className="text-3xl text-warm-black font-light tracking-tight mb-10">Checkout</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
           {/* Form */}
           <div className="lg:col-span-3 space-y-8">
             <div>
-              <h2 className="text-white text-sm tracking-[0.15em] uppercase mb-6">
+              <h2 className="text-warm-black text-sm tracking-[0.15em] uppercase mb-6 font-medium">
                 Contact Information
               </h2>
               <div className="space-y-4">
                 <div>
-                  <Label className="text-white/50 text-xs">Full Name</Label>
+                  <Label className="text-muted-warm text-xs">Full Name</Label>
                   <Input
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="mt-1 bg-white/5 border-white/10 text-white placeholder:text-white/20 focus-visible:ring-[#C9A962]/30"
+                    className="mt-1 border-warm-border text-warm-black placeholder:text-muted-warm"
                     placeholder="John Doe"
                   />
                 </div>
                 <div>
-                  <Label className="text-white/50 text-xs">Email</Label>
+                  <Label className="text-muted-warm text-xs">Email</Label>
                   <Input
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="mt-1 bg-white/5 border-white/10 text-white placeholder:text-white/20 focus-visible:ring-[#C9A962]/30"
+                    className="mt-1 border-warm-border text-warm-black placeholder:text-muted-warm"
                     placeholder="john@example.com"
                   />
                 </div>
                 <div>
-                  <Label className="text-white/50 text-xs">Shipping Address</Label>
+                  <Label className="text-muted-warm text-xs">Shipping Address</Label>
                   <Textarea
                     value={formData.address}
                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                    className="mt-1 bg-white/5 border-white/10 text-white placeholder:text-white/20 focus-visible:ring-[#C9A962]/30 h-24"
+                    className="mt-1 border-warm-border text-warm-black placeholder:text-muted-warm h-24"
                     placeholder="123 Main St, City, State, ZIP"
                   />
                 </div>
@@ -234,20 +234,20 @@ export default function Checkout() {
 
             {/* PayPal */}
             <div>
-              <h2 className="text-foreground text-sm tracking-[0.15em] uppercase mb-6 flex items-center gap-2">
-                <Lock className="w-4 h-4 text-gold" />
+              <h2 className="text-warm-black text-sm tracking-[0.15em] uppercase mb-6 flex items-center gap-2 font-medium">
+                <Lock className="w-4 h-4 text-amber-gold" />
                 Secure Payment
               </h2>
               {isProcessing ? (
                 <div className="text-center py-10">
-                  <div className="animate-pulse text-white/40">Processing payment...</div>
+                  <div className="animate-pulse text-muted-warm">Processing payment...</div>
                 </div>
               ) : (
                 <div id="paypal-button-container" className="min-h-[60px]" />
               )}
               {!paypalLoaded && (
                 <div className="text-center py-6">
-                  <div className="animate-pulse text-white/30 text-sm">Loading payment options...</div>
+                  <div className="animate-pulse text-muted-warm text-sm">Loading payment options...</div>
                 </div>
               )}
             </div>
@@ -255,42 +255,42 @@ export default function Checkout() {
 
           {/* Order Summary */}
           <div className="lg:col-span-2">
-            <div className="bg-card rounded-sm p-6 sticky top-28 border border-border/50">
-              <h2 className="text-white text-sm tracking-[0.15em] uppercase mb-6">
+            <div className="bg-white rounded-xl p-6 sticky top-28 border border-warm-border">
+              <h2 className="text-warm-black text-sm tracking-[0.15em] uppercase mb-6 font-medium">
                 Order Summary
               </h2>
 
               <div className="space-y-4 mb-6">
                 {cart.map((item, i) => (
                   <div key={i} className="flex gap-3">
-                    <div className="w-14 h-14 bg-[#1A1A1A] rounded-sm overflow-hidden flex-shrink-0">
+                    <div className="w-14 h-14 bg-offwhite rounded-lg overflow-hidden flex-shrink-0 border border-warm-border">
                       <img
-                        src={item.image_url || "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=200&q=80"}
+                        src={item.image_url || "/assets/watches/panda_daytona-removebg-preview.png"}
                         alt={item.name}
                         className="w-full h-full object-cover"
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-white text-xs truncate">{item.name}</p>
-                      <p className="text-white/30 text-[10px]">Qty: {item.quantity}</p>
+                      <p className="text-warm-black text-xs truncate font-medium">{item.name}</p>
+                      <p className="text-muted-warm text-[10px]">Qty: {item.quantity}</p>
                     </div>
-                    <p className="text-white text-xs">${(item.price * item.quantity).toLocaleString()}</p>
+                    <p className="text-warm-black text-xs font-medium">${(item.price * item.quantity).toLocaleString()}</p>
                   </div>
                 ))}
               </div>
 
-              <div className="border-t border-white/5 pt-4 space-y-3">
+              <div className="border-t border-warm-border pt-4 space-y-3">
                 <div className="flex justify-between text-xs">
-                  <span className="text-white/40">Subtotal</span>
-                  <span className="text-white">${total.toLocaleString()}</span>
+                  <span className="text-muted-warm">Subtotal</span>
+                  <span className="text-warm-black">${total.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-xs">
-                  <span className="text-white/40">Shipping</span>
-                  <span className="text-white">{shipping === 0 ? "Free" : `$${shipping}`}</span>
+                  <span className="text-muted-warm">Shipping</span>
+                  <span className="text-warm-black">{shipping === 0 ? "Free" : `$${shipping}`}</span>
                 </div>
-                <div className="flex justify-between text-sm pt-3 border-t border-white/5">
-                  <span className="text-foreground">Total</span>
-                  <span className="text-gold text-lg font-light">${grandTotal.toLocaleString()}</span>
+                <div className="flex justify-between text-sm pt-3 border-t border-warm-border">
+                  <span className="text-warm-black font-medium">Total</span>
+                  <span className="text-accent-orange text-lg font-semibold">${grandTotal.toLocaleString()}</span>
                 </div>
               </div>
             </div>
